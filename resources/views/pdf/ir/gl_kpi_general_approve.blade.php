@@ -115,15 +115,18 @@
         {{-- TTD --}}
         <table style="margin-top: 35px; margin-left: 120px;" id="table-ttd">
             <tr>
-                <td colspan="2"></td>
-                <td style="padding-bottom: 1px;" class="text-start text-capitalize text-nowrap">
+                <td class="text-start text-capitalize text-nowrap" style="padding-bottom: 2px;"></td>
+                <td></td>
+                <td colspan="3" class="text-center text-capitalize text-nowrap" style="padding-bottom: 2px;">
                     Girimulya, {{ formatDateWithTime($kpi->updated_at) }}
                 </td>
             </tr>
             <tr>
-                <td class="text-start text-capitalize text-nowrap" style="padding-bottom: 7px;">Disetujui Oleh,</td>
+                <td class="text-start text-capitalize text-nowrap" style="padding-bottom: 10px;">Disetujui Oleh,</td>
                 <td></td>
-                <td class="text-start text-capitalize text-nowrap" style="padding-bottom: 7px;">Dibuat Oleh,</td>
+                <td></td>
+                <td class="text-center text-capitalize text-nowrap" style="padding-bottom: 10px;">Dibuat Oleh,</td>
+                <td></td>
             </tr>
 
             {{-- Bagian Kosong --}}
@@ -132,11 +135,13 @@
                     <img height="70px"
                         src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$section->ttd}")) }}">
                 </td>
-                <td style="min-width: 600px; padding-top: 60px;"></td>
-                <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
-                    <img height="70px"
-                        src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$kpi->user->ttd}")) }}">
-                </td>
+                <td style="min-width: 400px; padding-top: 60px;"></td>
+                @foreach ($gl as $user)
+                    <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
+                        <img height="70px"
+                            src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$user->ttd}")) }}">
+                    </td>
+                @endforeach
             </tr>
 
             {{-- Nama --}}
@@ -148,12 +153,15 @@
                     Section Head HCGA
                 </td>
                 <td></td>
-                <td style="padding-top: 0px;" class="text-start text-capitalize text-nowrap">
-                    <span style="text-decoration: underline; display: block; padding-bottom: 5px; font-weight: bold">
-                        {{ $kpi->user->nama }}
-                    </span>
-                    Group Leader HCGA
-                </td>
+                @foreach ($gl as $user)
+                    <td style="padding-top: 0px;" class="text-start text-capitalize text-nowrap">
+                        <span
+                            style="text-decoration: underline; display: block; padding-bottom: 5px; font-weight: bold">
+                            {{ $user->nama }}
+                        </span>
+                        Group Leader HCGA
+                    </td>
+                @endforeach
             </tr>
         </table>
     </div>

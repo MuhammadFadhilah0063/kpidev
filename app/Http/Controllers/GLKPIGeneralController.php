@@ -46,7 +46,6 @@ class GLKPIGeneralController extends Controller
                     ->get();
             } else {
                 $kpis = GLKPIGeneral::where("subdivisi", $subdivisi)
-                    ->where("id_user", Auth::user()->id)
                     ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with("user")
@@ -131,6 +130,12 @@ class GLKPIGeneralController extends Controller
             // Data Section Head
             $section = User::where("KATEGORI", "SECTION")->first();
 
+            // Data 3 GL
+            $gl = User::where("kategori", "GROUP LEADER")
+                ->where("subdivisi", $kpi->subdivisi)
+                ->limit(3)
+                ->get();
+
             $pdf = PDF::setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
@@ -138,7 +143,7 @@ class GLKPIGeneralController extends Controller
                 ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
 
             // Load HTML view
-            $html = view($path, compact(['title', 'kpi', 'section']))->render();
+            $html = view($path, compact(['title', 'kpi', 'section', "gl"]))->render();
 
             // Load external CSS (Bootstrap)
             $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';
@@ -489,7 +494,13 @@ class GLKPIGeneralController extends Controller
         $title   = "KPI Group Leader $subdivisi - {$kpi->periode}";
 
         // Data Section Head
-        $section = User::where("KATEGORI", "SECTION")->first();
+        $section = User::where("kategori", "SECTION")->first();
+
+        // Data 3 GL
+        $gl = User::where("kategori", "GROUP LEADER")
+            ->where("subdivisi", $kpi->subdivisi)
+            ->limit(3)
+            ->get();
 
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
@@ -499,13 +510,13 @@ class GLKPIGeneralController extends Controller
 
         // Load HTML view
         if ($kpi->subdivisi == "COMBEN") {
-            $html = view('pdf.comben.gl_kpi_general', compact(['title', 'kpi', 'section']))->render();
+            $html = view('pdf.comben.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
         } else if ($kpi->subdivisi == "REKRUT") {
-            $html = view('pdf.rekrut.gl_kpi_general', compact(['title', 'kpi', 'section']))->render();
+            $html = view('pdf.rekrut.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
         } else if ($kpi->subdivisi == "TND") {
-            $html = view('pdf.tnd.gl_kpi_general', compact(['title', 'kpi', 'section']))->render();
+            $html = view('pdf.tnd.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
         } else {
-            $html = view('pdf.ir.gl_kpi_general', compact(['title', 'kpi', 'section']))->render();
+            $html = view('pdf.ir.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
         }
 
         // Load external CSS (Bootstrap)
