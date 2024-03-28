@@ -13,7 +13,7 @@ class GLKPI extends Model
     protected $table = 'gl_kpis';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'periode', 'id_kamus', 'aktual_realisasi', 'file', 'status', 'subdivisi', 'alasan', 'id_user'
+        'periode', 'id_kamus', 'aktual_realisasi', 'file', 'status', 'subdivisi', 'alasan', 'id_user', "pencapaian_sf"
     ];
 
     public $timestamps = false;

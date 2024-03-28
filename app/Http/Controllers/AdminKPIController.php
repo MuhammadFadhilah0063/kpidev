@@ -57,10 +57,13 @@ class AdminKPIController extends Controller
             $request->all(),
             [
                 'aktual_realisasi'   => 'required',
+                'pencapaian_sf'      => 'required|numeric',
                 'id_kamus'           => 'required',
             ],
             [
                 'aktual_realisasi.required'    => 'Aktual realisasi harus diisi!',
+                'pencapaian_sf.required'       => 'Pencapaian SF harus diisi!',
+                'pencapaian_sf.numeric'        => 'Pencapaian SF harus diisi angka. Angka desimal pakai "." bukan ","!',
                 'id_kamus.required'            => 'Point harus diisi!',
             ]
         );
@@ -84,6 +87,7 @@ class AdminKPIController extends Controller
                     'id_kamus' => $request->id_kamus,
                     'id_user' => $request->id_user,
                     'aktual_realisasi' => $request->aktual_realisasi,
+                    'pencapaian_sf' => $request->pencapaian_sf,
                     'subdivisi' => strtoupper($request->subdivisi),
                     'file' => $imgname,
                 ]);
@@ -93,6 +97,7 @@ class AdminKPIController extends Controller
                     'id_kamus' => $request->id_kamus,
                     'id_user' => $request->id_user,
                     'aktual_realisasi' => $request->aktual_realisasi,
+                    'pencapaian_sf' => $request->pencapaian_sf,
                     'subdivisi' => strtoupper($request->subdivisi),
                 ]);
             }
@@ -125,10 +130,13 @@ class AdminKPIController extends Controller
             $request->all(),
             [
                 'aktual_realisasi'   => 'required',
+                'pencapaian_sf'      => 'required|numeric',
                 'id_kamus'           => 'required',
             ],
             [
                 'aktual_realisasi.required'    => 'Aktual realisasi harus diisi!',
+                'pencapaian_sf.required'       => 'Pencapaian SF harus diisi!',
+                'pencapaian_sf.numeric'        => 'Pencapaian SF harus diisi angka. Angka desimal pakai "." bukan ","!',
                 'id_kamus.required'            => 'Point harus diisi!',
             ]
         );
@@ -150,6 +158,7 @@ class AdminKPIController extends Controller
                 'id_kamus' => $request->id_kamus,
                 'id_user' => $request->id_user,
                 'aktual_realisasi' => $request->aktual_realisasi,
+                'pencapaian_sf' => $request->pencapaian_sf,
                 'subdivisi' => strtoupper($request->subdivisi),
                 'status' => 'wait',
                 'alasan' => NULL,

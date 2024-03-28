@@ -1,164 +1,169 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data KPI Individu Group Leader ' . $subdivisi])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>KPI Individu Group Leader {{ $subdivisi }}</a></li>
+<li class="breadcrumb-item active"><a>KPI Individu Group Leader {{ $subdivisi }}</a></li>
 @endsection
 
 @push('button')
-    <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-        Tambah
-    </button>
+<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+    Tambah
+</button>
 @endpush
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            @if (Auth::user()->kategori == 'MASTER')
-                <div class="card-header">
-                    <div class="row text-center text-sm-start">
-                        <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center justify-content-sm-start">
-                            <select data-column="7" name="filter_nama" id="filter_nama" class="form-control select2"
-                                style="max-width: 250px;">
-                                <option value="">Pilih Filter</option>
+    <div class="card">
+        @if (Auth::user()->kategori == 'MASTER')
+        <div class="card-header">
+            <div class="row text-center text-sm-start">
+                <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center justify-content-sm-start">
+                    <select data-column="7" name="filter_nama" id="filter_nama" class="form-control select2"
+                        style="max-width: 250px;">
+                        <option value="">Pilih Filter</option>
+                        @foreach ($users as $user)
+                        <option value="{{ ucfirst($user->nama) }}">
+                            {{ ucfirst($user->nama) }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Periode</th>
+                            <th class="text-center text-nowrap">Point</th>
+                            <th class="text-center text-nowrap">Aktual Realisasi</th>
+                            <th class="text-center text-nowrap">Pencapaian SF</th>
+                            <th class="text-center text-nowrap">Target</th>
+                            <th class="text-center text-nowrap">Status</th>
+                            <th class="text-center text-nowrap">Alasan</th>
+                            <th class="text-center text-nowrap">nama</th>
+                            <th class="text-center text-nowrap">File</th>
+                            <th class="text-center text-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>User</label>
+                            @if (Auth::user()->kategori == 'MASTER')
+                            <select name="id_user" id="id_user" class="form-control select3">
                                 @foreach ($users as $user)
-                                    <option value="{{ ucfirst($user->nama) }}">
-                                        {{ ucfirst($user->nama) }}
-                                    </option>
+                                <option value="{{ $user->id }}">
+                                    {{ $user->nrp }} | {{ ucfirst($user->nama) }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @else
+                            <input class="form-control" type="hidden" name="id_user" id="id_user"
+                                value="{{ Auth::user()->id }}">
+                            <input class="form-control" type="text" readonly
+                                value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
+                            @endif
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Periode</label>
+                            <select name="periode" id="periode" class="form-control select3">
+                                @foreach ($periodes as $periode)
+                                <option value="{{ $periode->periode }}">
+                                    {{ ucfirst($periode->periode) }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-                </div>
-            @endif
 
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Periode</th>
-                                <th class="text-center text-nowrap">Point</th>
-                                <th class="text-center text-nowrap">Aktual Realisasi</th>
-                                <th class="text-center text-nowrap">Target</th>
-                                <th class="text-center text-nowrap">Status</th>
-                                <th class="text-center text-nowrap">Alasan</th>
-                                <th class="text-center text-nowrap">nama</th>
-                                <th class="text-center text-nowrap">File</th>
-                                <th class="text-center text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                </div>
+                        <div class="form-group pt-3">
+                            <label>Point</label>
+                            <select name="id_kamus" id="id_kamus" class="form-control select3">
+                                <option value="">Pilih Point</option>
+                                @foreach ($kamuss as $kamus)
+                                <option value="{{ $kamus->id }}">
+                                    {{ ucfirst($kamus->pointkpi) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Target</label>
+                            <input type="text" class="form-control" id="target" readonly>
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Aktual Realisasi</label>
+                            <input type="text" class="form-control" id="aktual_realisasi">
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Pencapaian SF</label>
+                            <input type="text" class="form-control" id="pencapaian_sf">
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Subdivisi</label>
+                            <input type="text" class="form-control" id="subdivisi" readonly value="{{ $subdivisi }}">
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>File</label>
+                            <input type="file" name="file" id="file" class="form-control"
+                                accept="image/*, application/pdf" onchange="selectPreview(this);">
+                            <small class="fst-italic">
+                                Pilih file, jika ingin upload. File bisa image atau pdf.
+                            </small>
+                        </div>
+
+                        {{-- Image Preview --}}
+                        <div class="col-12 text-center pt-3 div-image-preview">
+                            <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
+                                style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
+                        </div>
+
+                        {{-- PDF Preview --}}
+                        <div class="col-12 text-center pt-3 div-pdf-preview">
+                            <iframe style="display: none; margin: 0 auto;" id="pdfIframe" frameborder="0" height="400px"
+                                width="100%"></iframe>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                        <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>User</label>
-                                @if (Auth::user()->kategori == 'MASTER')
-                                    <select name="id_user" id="id_user" class="form-control select3">
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">
-                                                {{ $user->nrp }} | {{ ucfirst($user->nama) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input class="form-control" type="hidden" name="id_user" id="id_user"
-                                        value="{{ Auth::user()->id }}">
-                                    <input class="form-control" type="text" readonly
-                                        value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
-                                @endif
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Periode</label>
-                                <select name="periode" id="periode" class="form-control select3">
-                                    @foreach ($periodes as $periode)
-                                        <option value="{{ $periode->periode }}">
-                                            {{ ucfirst($periode->periode) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Point</label>
-                                <select name="id_kamus" id="id_kamus" class="form-control select3">
-                                    <option value="">Pilih Point</option>
-                                    @foreach ($kamuss as $kamus)
-                                        <option value="{{ $kamus->id }}">
-                                            {{ ucfirst($kamus->pointkpi) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Target</label>
-                                <input type="text" class="form-control" id="target" readonly>
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Aktual Realisasi</label>
-                                <input type="text" class="form-control" id="aktual_realisasi">
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Subdivisi</label>
-                                <input type="text" class="form-control" id="subdivisi" readonly
-                                    value="{{ $subdivisi }}">
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>File</label>
-                                <input type="file" name="file" id="file" class="form-control"
-                                    accept="image/*, application/pdf" onchange="selectPreview(this);">
-                                <small class="fst-italic">
-                                    Pilih file, jika ingin upload. File bisa image atau pdf.
-                                </small>
-                            </div>
-
-                            {{-- Image Preview --}}
-                            <div class="col-12 text-center pt-3 div-image-preview">
-                                <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
-                                    style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
-                            </div>
-
-                            {{-- PDF Preview --}}
-                            <div class="col-12 text-center pt-3 div-pdf-preview">
-                                <iframe style="display: none; margin: 0 auto;" id="pdfIframe" frameborder="0"
-                                    height="400px" width="100%"></iframe>
-                            </div>
-                        </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                            <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @push('scripts')
-            <script>
-                // Function memilih preview
+    @push('scripts')
+    <script>
+        // Function memilih preview
                 function selectPreview(input) {
                     var file = input.files[0];
 
@@ -219,7 +224,7 @@
                         serverSide: true,
                         ajax: "{{ url()->current() }}",
                         'createdRow': function(row, data, dataIndex) {
-                            $('td:eq(6)', row).css('min-width', '450px');
+                            $('td:eq(7)', row).css('min-width', '450px');
                         },
                         columns: [{
                                 data: 'id',
@@ -238,6 +243,9 @@
                             },
                             {
                                 data: 'aktual_realisasi'
+                            },
+                            {
+                                data: 'pencapaian_sf'
                             },
                             {
                                 data: 'kamus',
@@ -273,9 +281,9 @@
                                 render: function(data) {
                                     if (data != null) {
                                         return `<a href="{{ asset('storage/file/${data}') }}"
-                                                target="_blank" class="btn fw-bold btn-sm btn-info">
-                                                <i class="bi bi-search"></i>
-                                            </a>`;
+                                                    target="_blank" class="btn fw-bold btn-sm btn-info">
+                                                    <i class="bi bi-search"></i>
+                                                </a>`;
                                     } else {
                                         return "-";
                                     }
@@ -285,18 +293,18 @@
                                 data: 'id',
                                 render: function(data) {
                                     return `<button class="btnEdit btn fw-bold btn-sm btn-warning d-inline" data-id="${data}">
-                                        <i class="bi bi-pencil-square"></i></button>&nbsp;
-                                        <button class="btnHapus btn fw-bold btn-sm btn-danger d-inline" data-id="${data}">
-                                        <i class="bi bi-trash"></i></button>`;
+                                            <i class="bi bi-pencil-square"></i></button>&nbsp;
+                                            <button class="btnHapus btn fw-bold btn-sm btn-danger d-inline" data-id="${data}">
+                                            <i class="bi bi-trash"></i></button>`;
                                 }
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 7, 8, 9],
+                                targets: [0, 1, 3, 4, 5, 6, 8, 9, 10],
                                 className: "text-center align-middle text-capitalize text-nowrap"
                             },
                             {
-                                targets: [6],
+                                targets: [7],
                                 className: "align-middle",
                             },
                             {
@@ -324,10 +332,10 @@
 
                         if ($(".btn-aksi").text() == "EDIT") {
                             // Hapus invalid
-                            clearInvalidInput(["periode", "id_kamus", "aktual_realisasi", "file", "id_user"]);
+                            clearInvalidInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "file", "id_user"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "subdivisi",
                                 "id_user"
                             ]);
 
@@ -338,10 +346,10 @@
                             var url = "{{ url()->current() }}/" + id;
                         } else if ($(".btn-aksi").text() == "TAMBAH") {
                             // Hapus invalid
-                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "aktual_realisasi"]);
+                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "aktual_realisasi", "pencapaian_sf"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "subdivisi",
                                 "id_user"
                             ]);
                             var url = "{{ url()->current() }}";
@@ -422,6 +430,7 @@
                                     $('#periode').val(response.data.periode).trigger('change');
                                     $('#id_kamus').val(response.data.id_kamus).trigger('change');
                                     $('#aktual_realisasi').val(response.data.aktual_realisasi);
+                                    $('#pencapaian_sf').val(response.data.pencapaian_sf);
                                     $('#subdivisi').val(response.data.subdivisi).trigger(
                                         'change');
 
@@ -519,8 +528,8 @@
 
                     // Proses tutup modal
                     $('#modal').on('hidden.bs.modal', function() {
-                        clearInput(["aktual_realisasi", "file"]);
-                        clearInvalidInput(["aktual_realisasi", "file"]);
+                        clearInput(["aktual_realisasi", "file", "pencapaian_sf"]);
+                        clearInvalidInput(["aktual_realisasi", "file", "pencapaian_sf"]);
 
                         // Hapus pdf preview
                         var preview = $("#pdfIframe");
@@ -559,7 +568,7 @@
                     });
 
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection
