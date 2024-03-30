@@ -330,6 +330,16 @@
                 </a>
             </li>
             <!-- End KPI GL General Approve Nav -->
+
+            <!-- KPI Section Nav -->
+            <li class="nav-item">
+                <a class="nav-link nav-link-load {{ Request::is('section-kpi-general') ? '' : 'collapsed' }}"
+                    href="{{ route('sectionkpiGeneral') }}">
+                    <i class="bi bi-inboxes"></i>
+                    <span>KPI Section</span>
+                </a>
+            </li>
+            <!-- End KPI Section Nav -->
         @endif
 
         <li class="nav-heading">DATA MASTER</li>

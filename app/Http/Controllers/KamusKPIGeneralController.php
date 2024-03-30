@@ -258,4 +258,15 @@ class KamusKPIGeneralController extends Controller
             ]);
         }
     }
+
+    public function getKamus($id_kamus)
+    {
+        if ($id_kamus == "null") {
+            return [];
+        } else {
+            return KamusKPIGeneral::with(['indicator_items'])
+                ->where('id', $id_kamus)
+                ->first();
+        }
+    }
 }

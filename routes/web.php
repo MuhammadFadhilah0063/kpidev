@@ -14,8 +14,10 @@ use App\Http\Controllers\KamusKPIGeneralController;
 use App\Http\Controllers\GLKPIGeneralApproveController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\SectionKPIGeneralController;
 use App\Http\Controllers\UserController;
 use App\Models\KamusKPIGeneral;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -111,6 +113,20 @@ Route::middleware(['auth'])->group(function () {
     // Admin KPI General Approve
     Route::get('/admin-kpi-general-approve', [AdminKPIGeneralApproveController::class, 'index'])->name('adminkpiGeneralApprove');
 
+    // Section KPI General
+    Route::get('/section-kpi-general/{id}/pdf', [SectionKPIGeneralController::class, 'makePdf'])
+        ->name('sectionkpiGeneralPdf');
+    Route::get('/section-kpi-general', [SectionKPIGeneralController::class, 'index'])
+        ->name('sectionkpiGeneral');
+    Route::post('/section-kpi-general', [SectionKPIGeneralController::class, 'store'])
+        ->name('sectionStoreKPIGeneral');
+    Route::get('/section-kpi-general/{id}/edit', [SectionKPIGeneralController::class, 'edit'])
+        ->name('sectionEditKPIGeneral');
+    Route::put('/section-kpi-general/{id}', [SectionKPIGeneralController::class, 'update'])
+        ->name('sectionUpdateKPIGeneral');
+    Route::delete('/section-kpi-general/{id}', [SectionKPIGeneralController::class, 'destroy'])
+        ->name('sectionDestroyKPIGeneral');
+
     // Section KPI
     Route::post('/section/{subdivisi}/kpi/approve', [SectionController::class, 'approve'])->name('approveSection');
     Route::post('/section/{subdivisi}/kpi/reject', [SectionController::class, 'reject'])->name('rejectSection');
@@ -134,6 +150,7 @@ Route::middleware(['auth'])->group(function () {
 
     // AJAX
     Route::get('/get-kamus/{id_kamus}', [KamusKPIController::class, 'getKamus'])->name('getKamus');
+    Route::get('/get-kamus-general/{id_kamus}', [KamusKPIGeneralController::class, 'getKamus'])->name('getKamusGeneral');
 });
 
 // Login - Auth
@@ -142,8 +159,4 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [AuthController::class, 'auth'])->name('authMaster');
     Route::get('/login/master', [AuthController::class, 'loginMaster'])->name('loginMaster');
     Route::post('/login/master', [AuthController::class, 'authMaster'])->name('authMaster');
-});
-
-Route::get('tes', function () {
-    return KamusKPIGeneral::with(['indicator_items'])->where("subdivisi", "REKRUT")->get();
 });
