@@ -120,6 +120,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('sectionkpiGeneral');
     Route::post('/section-kpi-general', [SectionKPIGeneralController::class, 'store'])
         ->name('sectionStoreKPIGeneral');
+    Route::get('/section-kpi-general/{id}', [SectionKPIGeneralController::class, 'show'])
+        ->name('sectionShowKPIGeneral');
     Route::get('/section-kpi-general/{id}/edit', [SectionKPIGeneralController::class, 'edit'])
         ->name('sectionEditKPIGeneral');
     Route::put('/section-kpi-general/{id}', [SectionKPIGeneralController::class, 'update'])

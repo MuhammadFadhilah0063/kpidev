@@ -13,7 +13,7 @@ class SectionKPIGeneralCategoryGoalItem extends Model
     protected $table = 'section_kpi_general_category_goal_items';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'id_category', 'goal_name', 'metric_description', 'metric_scale', 'weight', 'nilai_pencapaian_sf'
+        'id_category', 'goal_name', 'metric_description', 'metric_scale', 'weight', 'nilai_pencapaian_sf', "konversi_bintang"
     ];
 
     public $timestamps = false;

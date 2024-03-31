@@ -21,7 +21,7 @@
 
         tr.tr-data>th,
         tr.tr-data>td {
-            border: 1.5px solid;
+            border: 1px solid;
             color: black;
         }
 
@@ -31,17 +31,6 @@
             font-weight: bold;
             text-transform: capitalize;
             background-color: #fbeeb9;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        th#th-sf {
-            border: 0.1px solid rgba(0, 0, 0, 0.659) !important;
-            background-color: #71b361;
-        }
-
-        td.td-sf {
-            border: 0.1px solid rgba(0, 0, 0, 0.659) !important;
             text-align: center;
             vertical-align: middle;
         }
@@ -77,63 +66,85 @@
             </span>
             <table>
                 <tr class="tr-data">
-                    <th>No</th>
-                    <th class="text-nowrap">BSC Category</th>
-                    <th>Goals Name</th>
-                    <th>Metric Description</th>
-                    <th>Metric Scale</th>
-                    <th>Parameter</th>
-                    <th>Weight</th>
-                    <th id="th-sf">NILAI PENCAPAIAN SF (KPI GENERAL)</th>
+                    <th style="min-width: 18px;">No</th>
+                    <th style="min-width: 79px;" class="text-nowrap">BSC Category</th>
+                    <th style="min-width: 110px;">Goals Name</th>
+                    <th style="min-width: 195px;">Metric Description</th>
+                    <th style="min-width: 195px;">Metric Scale</th>
+                    <th style="min-width: 130px;">Parameter</th>
+                    <th class="text-wrap" style="width: 75px;">Nilai</br>Pencapaian SF</th>
+                    <th style="width: 64px;">Konversi</br>Bintang</th>
+                    <th style="width: 44px;">Weight</th>
                 </tr>
 
                 @foreach ($kpi->category_items as $index => $category)
-                @if(count($category->goal_items) == 1)
-                <tr class="tr-data">
-                    <td class="td-no">{{ $index + 1 }}</td>
-                    <td>{{ $category->bsc_category }}</td>
-                    <td>{{ $category->goal_items[0]->goal_name }}</td>
-                    <td>{{ formatText($category->goal_items[0]->metric_description) }}</td>
-                    <td>{{ formatText($category->goal_items[0]->metric_scale) }}</td>
-                    <td>{{ $kpi->parameter }}</td>
-                    <td class="td-weight">{{ $category->goal_items[0]->weight }}%</td>
-                    <td class="td-sf">{{ $category->goal_items[0]->nilai_pencapaian_sf }}</td>
-                </tr>
-                @else
-                {{-- --}}
-                @foreach ($category->goal_items as $i => $goal)
-                @if($i == 0)
-                <tr class="tr-data">
-                    <td class="td-no">{{ $index + 1 }}</td>
-                    <td>{{ $category->bsc_category }}</td>
-                    <td>{{ $goal->goal_name }}</td>
-                    <td>{{ formatText($goal->metric_description) }}</td>
-                    <td>{{ formatText($goal->metric_scale) }}</td>
-                    <td></td>
-                    <td class="td-weight">{{ $goal->weight }}%</td>
-                    <td class="td-sf">{{ $goal->nilai_pencapaian_sf }}</td>
-                </tr>
-                @else
-                <tr class="tr-data">
-                    <td></td>
-                    <td></td>
-                    <td>{{ $goal->goal_name }}</td>
-                    <td>{{ formatText($goal->metric_description) }}</td>
-                    <td>{{ formatText($goal->metric_scale) }}</td>
-                    <td></td>
-                    <td class="td-weight">{{ $goal->weight }}%</td>
-                    <td class="td-sf">{{ $goal->nilai_pencapaian_sf }}</td>
-                </tr>
-                @endif
-                @endforeach
-                {{-- --}}
-                @endif
+                    {{-- @if (count($category->goal_items) == 1) --}}
+                    @if ($index == 0)
+                        {{-- --}}
+                        @foreach ($category->goal_items as $i => $goal)
+                            @if ($i == 0)
+                                <tr class="tr-data">
+                                    <td class="td-no">{{ $index + 1 }}</td>
+                                    <td>{{ $category->bsc_category }}</td>
+                                    <td>{{ $goal->goal_name }}</td>
+                                    <td>{{ formatText($goal->metric_description) }}</td>
+                                    <td>{{ formatText($goal->metric_scale) }}</td>
+                                    <td>{{ formatText($kpi->parameter) }}</td>
+                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                                    <td class="td-weight">{{ $goal->weight }}%</td>
+                                </tr>
+                            @else
+                                <tr class="tr-data">
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $goal->goal_name }}</td>
+                                    <td>{{ formatText($goal->metric_description) }}</td>
+                                    <td>{{ formatText($goal->metric_scale) }}</td>
+                                    <td></td>
+                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                                    <td class="td-weight">{{ $goal->weight }}%</td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        {{-- --}}
+                    @else
+                        {{-- --}}
+                        @foreach ($category->goal_items as $i => $goal)
+                            @if ($i == 0)
+                                <tr class="tr-data">
+                                    <td class="td-no">{{ $index + 1 }}</td>
+                                    <td>{{ $category->bsc_category }}</td>
+                                    <td>{{ $goal->goal_name }}</td>
+                                    <td>{{ formatText($goal->metric_description) }}</td>
+                                    <td>{{ formatText($goal->metric_scale) }}</td>
+                                    <td></td>
+                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                                    <td class="td-weight">{{ $goal->weight }}%</td>
+                                </tr>
+                            @else
+                                <tr class="tr-data">
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $goal->goal_name }}</td>
+                                    <td>{{ formatText($goal->metric_description) }}</td>
+                                    <td>{{ formatText($goal->metric_scale) }}</td>
+                                    <td></td>
+                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                                    <td class="td-weight">{{ $goal->weight }}%</td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        {{-- --}}
+                    @endif
                 @endforeach
 
                 <tr class="tr-data total-value">
-                    <td colspan="6"></td>
+                    <td colspan="8"></td>
                     <td>{{ $kpi->total }}%</td>
-                    <td style="border: none; background-color: transparent;"></td>
                 </tr>
             </table>
         </div>

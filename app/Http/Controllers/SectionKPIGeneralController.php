@@ -125,13 +125,30 @@ class SectionKPIGeneralController extends Controller
                     // Hitung Total KPI General
                     $totalWeight += floatval(trim($goal['weight'], '"'));
 
+                    // Nilai SF
+                    $nilai_sf = floatval(trim($goal['nilai_pencapaian_sf'], '"'));
+
+                    // Konversi bintang dari nilai sf
+                    if ($nilai_sf > 110) {
+                        $bintang = "Bintang 5";
+                    } else if ($nilai_sf >= 101) {
+                        $bintang = "Bintang 4";
+                    } else if ($nilai_sf >= 91) {
+                        $bintang = "Bintang 3";
+                    } else if ($nilai_sf >= 80) {
+                        $bintang = "Bintang 2";
+                    } else {
+                        $bintang = "Bintang 1";
+                    }
+
                     SectionKPIGeneralCategoryGoalItem::create([
                         "id_category"          => $id_category,
                         "goal_name"            => ucfirst(trim($goal['goal_name'], '"')),
                         "metric_description"   => ucfirst(trim($goal['metric_description'], '"')),
                         "metric_scale"         => ucfirst(trim($goal['metric_scale'], '"')),
                         "weight"               => floatval(trim($goal['weight'], '"')),
-                        "nilai_pencapaian_sf"  => trim($goal['nilai_pencapaian_sf'], '"'),
+                        "nilai_pencapaian_sf"  => $nilai_sf,
+                        "konversi_bintang"     => $bintang,
                     ]);
                 }
             }
@@ -152,6 +169,17 @@ class SectionKPIGeneralController extends Controller
                 "errors" => $err,
             ]);
         }
+    }
+
+    public function show($id)
+    {
+        $data = SectionKPIGeneral::with(['category_items', 'category_items.goal_items'])->find($id);
+
+        // Kirim data sebagai respons JSON
+        return response()->json([
+            "status" => "success",
+            "data"   => $data,
+        ]);
     }
 
     public function edit($id)
@@ -254,13 +282,30 @@ class SectionKPIGeneralController extends Controller
                     // Hitung Total KPI General
                     $totalWeight += floatval(trim($goal['weight'], '"'));
 
+                    // Nilai SF
+                    $nilai_sf = floatval(trim($goal['nilai_pencapaian_sf'], '"'));
+
+                    // Konversi bintang dari nilai sf
+                    if ($nilai_sf > 110) {
+                        $bintang = "Bintang 5";
+                    } else if ($nilai_sf >= 101) {
+                        $bintang = "Bintang 4";
+                    } else if ($nilai_sf >= 91) {
+                        $bintang = "Bintang 3";
+                    } else if ($nilai_sf >= 80) {
+                        $bintang = "Bintang 2";
+                    } else {
+                        $bintang = "Bintang 1";
+                    }
+
                     SectionKPIGeneralCategoryGoalItem::create([
                         "id_category"          => $id_category,
                         "goal_name"            => ucfirst(trim($goal['goal_name'], '"')),
                         "metric_description"   => ucfirst(trim($goal['metric_description'], '"')),
                         "metric_scale"         => ucfirst(trim($goal['metric_scale'], '"')),
                         "weight"               => floatval(trim($goal['weight'], '"')),
-                        "nilai_pencapaian_sf"  => trim($goal['nilai_pencapaian_sf'], '"'),
+                        "nilai_pencapaian_sf"  => $nilai_sf,
+                        "konversi_bintang"     => $bintang,
                     ]);
                 }
             }
@@ -323,15 +368,6 @@ class SectionKPIGeneralController extends Controller
             ->where("id", $id)
             ->first();
 
-        // Hitung jumlah goal
-        $totalGoal = 0;
-        foreach ($kpi->category_items as $category) {
-            $totalGoal += $category->goal_items->count();
-        }
-
-        // Data Section Head
-        $section = User::where("kategori", "SECTION")->first();
-
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
@@ -339,7 +375,7 @@ class SectionKPIGeneralController extends Controller
             ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
 
         // Load HTML view
-        $html = view('pdf.section.section_kpi_general', compact(['kpi', 'section', 'totalGoal']))->render();
+        $html = view('pdf.section.section_kpi_general', compact(['kpi']))->render();
 
         // Load external CSS (Bootstrap)
         $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';
