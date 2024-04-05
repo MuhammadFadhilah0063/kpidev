@@ -42,13 +42,13 @@ class GLKPIGeneralController extends Controller
                 $kpis = GLKPIGeneral::where("subdivisi", $subdivisi)
                     ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
-                    ->with("user")
+                    ->with(["user", "periode"])
                     ->get();
             } else {
                 $kpis = GLKPIGeneral::where("subdivisi", $subdivisi)
                     ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
-                    ->with("user")
+                    ->with(["user", "periode"])
                     ->get();
             }
 
@@ -56,7 +56,7 @@ class GLKPIGeneralController extends Controller
                 ->make(true);
         }
 
-        $periodes = Periode::orderBy("id", "desc")->get();
+        $periodes = Periode::orderBy("tanggal", "ASC")->get();
 
         // Kamus General Berdasarkan Sub Divisi - Cari Yang Aktif / Memiliki Baris
         $kamuss = KamusKPIGeneral::with("indicator_items")
@@ -85,15 +85,14 @@ class GLKPIGeneralController extends Controller
         if (request()->ajax()) {
             $kpis = GLKPIGeneral::where("status", "wait")
                 ->orderBy("id", "DESC")
-                ->with("user")
+                ->with(["user", "periode"])
                 ->get();
 
             return DataTables::of($kpis)
                 ->make(true);
         }
 
-        $periodes = Periode::orderBy("id", "desc")
-            ->get();
+        $periodes = Periode::orderBy("tanggal", "ASC")->get();
         $users = User::where("kategori", "GROUP LEADER")
             ->orderBy("id", "desc")
             ->get();
@@ -106,7 +105,7 @@ class GLKPIGeneralController extends Controller
         try {
             DB::beginTransaction();
 
-            $kpi = GLKPIGeneral::with(['user', 'items', 'items.key_kamus', 'items.key_kamus.kamus'])
+            $kpi = GLKPIGeneral::with(['user', 'items', 'periode', 'items.key_kamus', 'items.key_kamus.kamus'])
                 ->find($request->id);
 
             /// Bikin file pdf ///
@@ -125,7 +124,7 @@ class GLKPIGeneralController extends Controller
                 $path = "pdf.ir.gl_kpi_general_approve";
             }
 
-            $title = "KPI Group Leader $subdivisi - {$kpi->periode}";
+            $title = "KPI Group Leader $subdivisi - {$kpi->periode->periode}";
 
             // Data Section Head
             $section = User::where("KATEGORI", "SECTION")->first();
@@ -256,7 +255,7 @@ class GLKPIGeneralController extends Controller
                 $request->file->move('storage/file/', $imgname);
 
                 $kpi = GLKPIGeneral::create([
-                    'periode' => ucfirst($request->periode),
+                    'id_periode' => $request->periode,
                     'id_user' => $request->id_user,
                     'total' => 0,
                     'subdivisi' => strtoupper($subdivisi),
@@ -264,7 +263,7 @@ class GLKPIGeneralController extends Controller
                 ]);
             } else {
                 $kpi = GLKPIGeneral::create([
-                    'periode' => ucfirst($request->periode),
+                    'id_periode' => $request->periode,
                     'id_user' => $request->id_user,
                     'total' => 0,
                     'subdivisi' => strtoupper($subdivisi),
@@ -329,6 +328,7 @@ class GLKPIGeneralController extends Controller
     {
         $dataUser = GLKPIGeneral::with(['user'])->find($id);
         $dataItems = GLKPIGeneral::with(['items', 'items.key_kamus'])->find($id);
+        $periode = GLKPIGeneral::select("id_periode")->with(['periode'])->find($id);
 
         if ($dataUser && $dataItems) {
             // Gabungkan dataUser dan dataItems
@@ -338,6 +338,7 @@ class GLKPIGeneralController extends Controller
             // Kelompokkan item berdasarkan no_urut
             $groupedItems = collect($data['items'])->groupBy('no_urut')->toArray();
             $data['items'] = $groupedItems;
+            $data['periode'] = $periode->periode;
         }
 
         // Kirim data sebagai respons JSON
@@ -359,10 +360,10 @@ class GLKPIGeneralController extends Controller
 
             // Update kpi general
             $kpi->update([
-                'periode' => ucfirst($request->periode),
-                'id_user' => $request->id_user,
-                'alasan' => null,
-                'status' => "wait",
+                'id_periode' => $request->periode,
+                'id_user'    => $request->id_user,
+                'alasan'     => null,
+                'status'     => "wait",
             ]);
 
             // Update file
@@ -476,7 +477,7 @@ class GLKPIGeneralController extends Controller
 
     public function makePdf($id)
     {
-        $kpi = GLKPIGeneral::with(['user', 'items', 'items.key_kamus', 'items.key_kamus.kamus'])
+        $kpi = GLKPIGeneral::with(['user', 'items', 'items.key_kamus', 'periode', 'items.key_kamus.kamus'])
             ->where("id", $id)
             ->first();
 
@@ -491,7 +492,7 @@ class GLKPIGeneralController extends Controller
             $subdivisi = "Industrial Relation";
         }
 
-        $title   = "KPI Group Leader $subdivisi - {$kpi->periode}";
+        $title   = "KPI Group Leader $subdivisi - {$kpi->periode->periode}";
 
         // Data Section Head
         $section = User::where("kategori", "SECTION")->first();

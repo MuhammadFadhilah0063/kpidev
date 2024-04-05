@@ -66,7 +66,6 @@
                         <tr>
                             <th class="text-center text-nowrap">No.</th>
                             <th class="text-center text-nowrap">Periode</th>
-                            <th class="text-center text-nowrap">nama</th>
                             <th class="text-center text-nowrap">Sub Divisi</th>
                             <th class="text-center text-nowrap">KPI</th>
                             <th class="text-center text-nowrap">File</th>
@@ -83,24 +82,24 @@
 
     {{-- Modal --}}
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">Reject KPI</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form enctype="multipart/form-data" id="formReject">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" id="formReject">
                         <div class="form-group">
                             <label>Alasan</label>
                             <textarea name="alasan" id="alasan" class="form-control" cols="30" rows="3"></textarea>
                         </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                        <button type="button" class="btn btn-danger btn-reject">Reject</button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-danger btn-reject">Reject</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -124,10 +123,7 @@
                                 }
                             },
                             {
-                                data: 'periode'
-                            },
-                            {
-                                data: 'user.nama'
+                                data: 'periode.periode'
                             },
                             {
                                 data: 'subdivisi'
@@ -166,12 +162,8 @@
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 6],
+                                targets: [0, 1, 2, 3, 4, 5],
                                 className: "text-center align-middle text-capitalize text-nowrap"
-                            },
-                            {
-                                targets: [2],
-                                className: "align-middle text-capitalize text-nowrap"
                             },
                         ]
                     });

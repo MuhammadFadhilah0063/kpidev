@@ -136,18 +136,15 @@
             {{-- Bagian Kosong --}}
             <tr>
                 <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
-                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("
-                        storage/ttd/{$section->ttd}")) }}">
+                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$section->ttd}")) }}">
                 </td>
                 <td style="min-width: 230px; padding-top: 60px;"></td>
                 <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
-                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("
-                        storage/ttd/{$userApprove->ttd}")) }}">
+                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$userApprove->ttd}")) }}">
                 </td>
                 <td style="min-width: 230px; padding-top: 60px;"></td>
                 <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
-                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("
-                        storage/ttd/{$kpi->user->ttd}")) }}">
+                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$kpi->user->ttd}")) }}">
                 </td>
             </tr>
 

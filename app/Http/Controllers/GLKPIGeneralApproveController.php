@@ -6,7 +6,6 @@ use App\Models\GLKPIGeneralApprove;
 use App\Models\Periode;
 use App\Models\User;
 use App\Services\BadgeService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -31,7 +30,7 @@ class GLKPIGeneralApproveController extends Controller
         if (request()->ajax()) {
 
             if (Auth::user()->subdivisi) {
-                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user"])
+                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user", "kpi.periode"])
                     ->whereHas('kpi', function ($query) {
                         $query->where('subdivisi', Auth::user()->subdivisi);
                         $query->where('id_user', Auth::user()->id);
@@ -39,7 +38,7 @@ class GLKPIGeneralApproveController extends Controller
                     ->latest()
                     ->get();
             } else {
-                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user"])
+                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user", "kpi.periode"])
                     ->latest()
                     ->get();
             }
@@ -48,7 +47,7 @@ class GLKPIGeneralApproveController extends Controller
         }
 
         // Periodes
-        $periodes = Periode::get();
+        $periodes = Periode::orderBy("tanggal", "ASC")->get();
 
         if (Auth::user()->subdivisi) {
             $subdivisi = Auth::user()->subdivisi;

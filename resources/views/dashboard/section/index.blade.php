@@ -1,84 +1,84 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data KPI'])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>Section Head</a></li>
+<li class="breadcrumb-item active"><a>Section Head</a></li>
 @endsection
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row text-center text-sm-start">
-                    <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Nama</label>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center justify-content-sm-start">
-                        <select data-column="5" name="filter_subdivisi" id="filter_subdivisi" class="form-control select2"
-                            style="max-width: 250px;">
-                            <option value="">Pilih Filter</option>
-                            @foreach ($glUsers as $users)
-                                <option value="{{ ucfirst($users->nama) }}">
-                                    {{ ucfirst($users->nama) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row text-center text-sm-start">
+                <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Nama</label>
             </div>
-
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Periode</th>
-                                <th class="text-center text-nowrap">Point</th>
-                                <th class="text-center text-nowrap">Aktual Realisasi</th>
-                                <th class="text-center text-nowrap">Target</th>
-                                <th class="text-center text-nowrap">Nama</th>
-                                <th class="text-center text-nowrap">Subdivisi</th>
-                                <th class="text-center text-nowrap">File</th>
-                                <th class="text-center text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
+            <div class="row">
+                <div class="col d-flex justify-content-center justify-content-sm-start">
+                    <select data-column="5" name="filter_subdivisi" id="filter_subdivisi" class="form-control select2"
+                        style="max-width: 250px;">
+                        <option value="">Pilih Filter</option>
+                        @foreach ($glUsers as $users)
+                        <option value="{{ ucfirst($users->nama) }}">
+                            {{ ucfirst($users->nama) }}
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">Reject KPI</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Periode</th>
+                            <th class="text-center text-nowrap">Point</th>
+                            <th class="text-center text-nowrap">Pencapaian SF</th>
+                            <th class="text-center text-nowrap">Target</th>
+                            <th class="text-center text-nowrap">Nama</th>
+                            <th class="text-center text-nowrap">Subdivisi</th>
+                            <th class="text-center text-nowrap">File</th>
+                            <th class="text-center text-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Reject KPI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <form enctype="multipart/form-data" id="formReject">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Alasan</label>
-                                <textarea name="alasan" id="alasan" class="form-control" cols="30" rows="3"></textarea>
-                            </div>
+                        <div class="form-group">
+                            <label>Alasan</label>
+                            <textarea name="alasan" id="alasan" class="form-control" cols="30" rows="3"></textarea>
                         </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                            <button type="button" class="btn btn-danger btn-reject">Reject</button>
-                        </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-danger btn-reject">Reject</button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                $(document).ready(function() {
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
 
                     // Datatable
                     var dataTable = $('#tableData').DataTable({
@@ -95,13 +95,13 @@
                                 }
                             },
                             {
-                                data: 'periode'
+                                data: 'periode.periode'
                             },
                             {
                                 data: 'kamus.pointkpi'
                             },
                             {
-                                data: 'aktual_realisasi'
+                                data: 'pencapaian_sf'
                             },
                             {
                                 data: 'kamus',
@@ -369,7 +369,7 @@
                     });
 
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection

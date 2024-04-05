@@ -27,4 +27,9 @@ class Kamuskpi extends Model
     {
         return $this->belongsTo(AdminKPI::class, "id", "id_kamus");
     }
+
+    public function rekap_gl_kpi(): BelongsTo
+    {
+        return $this->belongsTo(RekapPencapaianSFGLKPI::class, "id", "id_kamus");
+    }
 }

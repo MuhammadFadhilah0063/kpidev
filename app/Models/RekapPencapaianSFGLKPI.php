@@ -6,30 +6,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class GLKPI extends Model
+class RekapPencapaianSFGLKPI extends Model
 {
     use HasFactory;
 
-    protected $table = 'gl_kpis';
+    protected $table = 'rekap_pencapaian_sf_gl_kpi_individu';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'id_periode', 'id_kamus', 'file', 'status', 'subdivisi', 'alasan', 'id_user', "pencapaian_sf"
+        'point_kpi', 'periode', 'id_user', 'id_kamus', 'rata_rata_pencapaian_sf', 'konversi_bintang'
     ];
 
     public $timestamps = false;
-
-    public function kamus(): HasOne
-    {
-        return $this->hasOne(Kamuskpi::class, "id", "id_kamus");
-    }
 
     public function user(): HasOne
     {
         return $this->hasOne(User::class, "id", "id_user");
     }
 
-    public function periode(): HasOne
+    public function kamus(): HasOne
     {
-        return $this->hasOne(Periode::class, "id", "id_periode");
+        return $this->hasOne(Kamuskpi::class, "id", "id_kamus");
     }
 }

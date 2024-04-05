@@ -270,4 +270,80 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function update_foto(User $user, Request $request)
+    {
+
+        try {
+
+            if ($request->hasFile('foto')) {
+
+                // Hapus foto
+                if ($user->foto_profil && $user->foto_profil != "default.png") {
+                    $filePath = 'storage/foto_profil/' . $user->foto_profil;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+
+                // Ubah foto
+                $imgname = $request->foto->hashName();
+                $request->foto->move('storage/foto_profil/', $imgname);
+
+                $user->update([
+                    'foto_profil' => $imgname,
+                ]);
+            }
+
+            return response()->json([
+                "status" => "success",
+                "message" => "Berhasil edit foto profile!",
+            ]);
+        } catch (QueryException $err) {
+            return response()->json([
+                "status" => "failed",
+                "message" => "Gagal edit foto profile!",
+                "err" => $err
+            ]);
+        }
+    }
+
+    public function update_password(User $user, Request $request)
+    {
+
+        try {
+            if ($request->password_lama != null && $request->password_baru != null) {
+
+                if (Hash::check($request->password_lama, $user->password)) {
+                    $user->update([
+                        'password' => Hash::make(trim($request->password_baru)),
+                    ]);
+                } else {
+                    return response()->json([
+                        "status" => "failed",
+                        "message" => "Gagal edit, password lama salah!",
+                        "errors" => [
+                            "password_lama" => ["Password lama salah"],
+                        ]
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    "status" => "failed",
+                    "message" => "Gagal edit password, pastikan input password terisi!",
+                ]);
+            }
+
+            return response()->json([
+                "status" => "success",
+                "message" => "Berhasil edit password!",
+            ]);
+        } catch (QueryException $err) {
+            return response()->json([
+                "status" => "failed",
+                "message" => "Gagal edit password!",
+                "err" => $err
+            ]);
+        }
+    }
 }

@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->belongsTo(GLKPI::class, "id", "id_user");
     }
 
+    public function rekap_gl_kpi(): BelongsTo
+    {
+        return $this->belongsTo(RekapPencapaianSFGLKPI::class, "id", "id_user");
+    }
+
     public function gl_kpi_general(): BelongsTo
     {
         return $this->belongsTo(GLKPIGeneral::class, "id", "id_user");

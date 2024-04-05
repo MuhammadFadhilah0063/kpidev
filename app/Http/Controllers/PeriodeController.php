@@ -61,8 +61,12 @@ class PeriodeController extends Controller
 
         try {
 
+            // Pisah bulan dan tahun dan buat jadi tanggal real
+            $tanggal = explodeBulanDanTahun($request->periode);
+
             Periode::create([
                 'periode' => ucfirst($request->periode),
+                'tanggal' => $tanggal,
             ]);
 
             return response()->json([
@@ -111,8 +115,13 @@ class PeriodeController extends Controller
         }
 
         try {
+
+            // Pisah bulan dan tahun dan buat jadi tanggal real
+            $tanggal = explodeBulanDanTahun($request->periode);
+
             $periode->update([
                 'periode' => ucfirst($request->periode),
+                'tanggal' => $tanggal,
             ]);
 
             return response()->json([

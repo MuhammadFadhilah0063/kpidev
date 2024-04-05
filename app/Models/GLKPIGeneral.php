@@ -15,12 +15,17 @@ class GLKPIGeneral extends Model
     protected $table = 'gl_kpi_generals';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'file', 'total', 'id_user', "status", "periode", "subdivisi", "alasan", "created_at", "updated_at",
+        'file', 'total', 'id_user', "status", "id_periode", "subdivisi", "alasan", "created_at", "updated_at",
     ];
 
     public function user(): HasOne
     {
         return $this->hasOne(User::class, "id", "id_user");
+    }
+
+    public function periode(): HasOne
+    {
+        return $this->hasOne(Periode::class, "id", "id_periode");
     }
 
     public function kpiApprove(): BelongsTo

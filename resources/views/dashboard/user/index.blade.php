@@ -1,111 +1,109 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data User'])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>User</a></li>
+<li class="breadcrumb-item active"><a>User</a></li>
 @endsection
 
 @push('button')
-    <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-        Tambah
-    </button>
+<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+    Tambah
+</button>
 @endpush
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">NRP</th>
-                                <th class="text-center text-nowrap">Nama</th>
-                                <th class="text-center text-nowrap">Kategori</th>
-                                <th class="text-center text-nowrap">Sub Divisi</th>
-                                <th class="text-center text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">NRP</th>
+                            <th class="text-center text-nowrap">Nama</th>
+                            <th class="text-center text-nowrap">Kategori</th>
+                            <th class="text-center text-nowrap">Sub Divisi</th>
+                            <th class="text-center text-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
             </div>
         </div>
+    </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH USER BARU</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH USER BARU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <form enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>NRP</label>
-                                <input type="text" name="nrp" id="nrp" class="form-control" required
-                                    placeholder="nrp">
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Nama</label>
-                                <input type="text" name="nama" id="nama" class="form-control" required
-                                    placeholder="nama">
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Kategori</label>
-                                <select name="kategori" id="kategori" class="form-control select3">
-                                    <option value="ADMIN">ADMIN</option>
-                                    <option value="GROUP LEADER">GROUP LEADER</option>
-                                    <option value="SECTION">SECTION</option>
-                                    <option value="MASTER">MASTER</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Sub Divisi</label>
-                                <select name="subdivisi" id="subdivisi" class="form-control select3">
-                                    <option value="">Tidak Ada Sub Divisi</option>
-                                    <option value="COMBEN">COMBEN</option>
-                                    <option value="REKRUT">REKRUT</option>
-                                    <option value="TND">TND</option>
-                                    <option value="IR">IR</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group pt-3">
-                                <label>Foto Profil</label>
-                                <input type="file" name="foto_profil" id="foto_profil" class="form-control"
-                                    accept="image/*" onchange="previewImage(this);">
-                                <small class="fst-italic">
-                                    Pilih file foto, jika ingin upload foto profil.
-                                </small>
-                            </div>
-
-                            {{-- Image Preview --}}
-                            <div class="col-12 text-center pt-3 div-image-preview">
-                                <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
-                                    style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
-                            </div>
+                        <div class="form-group">
+                            <label>NRP</label>
+                            <input type="text" name="nrp" id="nrp" class="form-control" required placeholder="nrp">
                         </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                            <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
+
+                        <div class="form-group pt-3">
+                            <label>Nama</label>
+                            <input type="text" name="nama" id="nama" class="form-control" required placeholder="nama">
                         </div>
+
+                        <div class="form-group pt-3">
+                            <label>Kategori</label>
+                            <select name="kategori" id="kategori" class="form-control select3">
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="GROUP LEADER">GROUP LEADER</option>
+                                <option value="SECTION">SECTION</option>
+                                <option value="MASTER">MASTER</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Sub Divisi</label>
+                            <select name="subdivisi" id="subdivisi" class="form-control select3">
+                                <option value="">Tidak Ada Sub Divisi</option>
+                                <option value="COMBEN">COMBEN</option>
+                                <option value="REKRUT">REKRUT</option>
+                                <option value="TND">TND</option>
+                                <option value="IR">IR</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Foto Profil</label>
+                            <input type="file" name="foto_profil" id="foto_profil" class="form-control" accept="image/*"
+                                onchange="previewImage(this);">
+                            <small class="fst-italic">
+                                Pilih file foto, jika ingin upload foto profil.
+                            </small>
+                        </div>
+
+                        {{-- Image Preview --}}
+                        <div class="col-12 text-center pt-3 div-image-preview">
+                            <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
+                                style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
+                        </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                // Function Image Preview
+    @push('scripts')
+    <script>
+        // Function Image Preview
                 function previewImage(input) {
                     var preview = document.getElementById('imagePreview');
                     var file = input.files[0];
@@ -386,7 +384,7 @@
                     });
 
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection

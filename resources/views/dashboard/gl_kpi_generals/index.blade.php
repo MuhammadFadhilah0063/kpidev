@@ -60,7 +60,7 @@
 
     {{-- Modal --}}
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
@@ -107,7 +107,7 @@
                                 <label>Periode</label>
                                 <select name="periode" id="periode" class="form-control select3">
                                     @foreach ($periodes as $periode)
-                                    <option value="{{ $periode->periode }}">
+                                    <option value="{{ $periode->id }}">
                                         {{ ucfirst($periode->periode) }}</option>
                                     @endforeach
                                 </select>
@@ -179,7 +179,11 @@
                                         <small class="fst-italic">
                                             Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada
                                             akhir
-                                            kalimat.
+                                            kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                                title="Contoh pengisian!"
+                                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
                                         </small>
                                     </div>
 
@@ -297,7 +301,7 @@
                                 }
                             },
                             {
-                                data: 'periode'
+                                data: 'periode.periode'
                             },
                             {
                                 data: 'user.nama'
@@ -514,7 +518,7 @@
                                         $('#id_user').val(response.data.id_user);
                                     @endif
 
-                                    $('#periode').val(response.data.periode).trigger('change');
+                                    $('#periode').val(response.data.periode.id).trigger('change');
 
                                     if (response.data.file) {
                                         var ekstensi = ((response.data.file).split('.'))[1];

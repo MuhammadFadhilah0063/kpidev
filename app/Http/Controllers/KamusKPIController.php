@@ -89,6 +89,7 @@ class KamusKPIController extends Controller
             return response()->json([
                 "status" => "failed",
                 "message" => "Gagal tambah kamus!",
+                "err" => $err
             ]);
         }
     }

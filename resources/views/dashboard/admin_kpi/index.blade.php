@@ -42,14 +42,14 @@
 
     {{-- Modal --}}
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form enctype="multipart/form-data">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form enctype="multipart/form-data">
                         <div class="form-group">
                             <label>User</label>
                             <input class="form-control" type="hidden" name="id_user" id="id_user"
@@ -119,12 +119,12 @@
                             <iframe style="display: none; margin: 0 auto;" id="pdfIframe" frameborder="0" height="400px"
                                 width="100%"></iframe>
                         </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                        <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -1,66 +1,88 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data Periode'])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>Periode</a></li>
+<li class="breadcrumb-item active"><a>Periode</a></li>
 @endsection
 
 @push('button')
-    <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-        Tambah
-    </button>
+<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+    Tambah
+</button>
 @endpush
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Periode</th>
-                                <th class="text-center text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Periode</th>
+                            <th class="text-center text-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
             </div>
         </div>
+    </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH PERIODE BARU</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH PERIODE BARU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <form enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Periode</label>
-                                <input type="text" name="periode" id="periode" class="form-control" required
-                                    placeholder="periode">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label class="pb-1">Bulan</label>
+                                    <select name="bulan" id="bulan" class="form-select" required>
+                                        <option value="">Pilih Bulan</option>
+                                        <option value="Januari">Januari</option>
+                                        <option value="Februari">Februari</option>
+                                        <option value="Maret">Maret</option>
+                                        <option value="April">April</option>
+                                        <option value="Mei">Mei</option>
+                                        <option value="Juni">Juni</option>
+                                        <option value="Juli">Juli</option>
+                                        <option value="Agustus">Agustus</option>
+                                        <option value="September">September</option>
+                                        <option value="Oktober">Oktober</option>
+                                        <option value="November">November</option>
+                                        <option value="Desember">Desember</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="pb-1">Tahun</label>
+                                    <input type="text" name="tahun" id="tahun" class="form-control" minlength="4"
+                                        maxlength="4" placeholder="2000" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                            <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
-                        </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                $(document).ready(function() {
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
 
                     // Button add
                     $('#btnAdd').on("click", function(event) {
@@ -106,24 +128,23 @@
                         // Tampil loading
                         $(".load").removeClass("d-none");
 
+                        // Hapus invalid
+                        clearInvalidInput(["tahun"]);
+
+                        var bulan = $(`select[name="bulan"]`).val();
+                        var tahun = $(`input[name="tahun"]`).val();
+                        var bulanTahun = `${bulan} ${tahun}`;
+
+                        // Mengambil nilai dari input
+                        var formData = new FormData();
+                        formData.append("periode", bulanTahun);
+
                         if ($(".btn-aksi").text() == "EDIT") {
-                            // Hapus invalid
-                            clearInvalidInput(["periode"]);
-
-                            // Mengambil nilai dari input
-                            var formData = getValueInput(["periode"]);
-
                             formData.append('_method', 'PUT');
-
                             // Ambil id
                             var id = $('.btn-aksi').attr("data-id");
                             var url = "periode/" + id;
                         } else if ($(".btn-aksi").text() == "TAMBAH") {
-                            // Hapus invalid
-                            clearInvalidInput(["periode"]);
-
-                            // Mengambil nilai dari input
-                            var formData = getValueInput(["periode"]);
                             var url = "periode";
                         }
 
@@ -157,7 +178,10 @@
                                     showAlert('error', response.message);
 
                                     // Menambah Invalid
-                                    addInvalidInput(response.errors);
+                                    $(`input[name="tahun"]`).addClass("is-invalid");
+                                    $(`input[name="tahun"]`)
+                                    .parent()
+                                    .append(`<div class="invalid-feedback">Periode sudah ada!</div>`);
                                 }
                             },
                             error: function(error) {
@@ -185,7 +209,10 @@
                                 $("#modal").modal("show");
 
                                 if (response.periode) {
-                                    $('#periode').val(response.periode.periode);
+                                    var periode = response.periode.periode;
+                                    var bulanTahun = periode.split(" ");
+                                    $(`select[name="bulan"]`).val(bulanTahun[0]);
+                                    $(`input[name="tahun"]`).val(bulanTahun[1]);
                                 }
                             }
                         });
@@ -271,7 +298,7 @@
                     });
 
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection

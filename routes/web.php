@@ -13,11 +13,10 @@ use App\Http\Controllers\KamusKPIController;
 use App\Http\Controllers\KamusKPIGeneralController;
 use App\Http\Controllers\GLKPIGeneralApproveController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\RekapPencapaianSFGLKPIController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SectionKPIGeneralController;
 use App\Http\Controllers\UserController;
-use App\Models\KamusKPIGeneral;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('editUser');
     Route::put('/user/{user}', [UserController::class, 'update'])->name('updateUser');
     Route::put('/user/{user}/update-ttd', [UserController::class, 'update_ttd'])->name('updateUserTtd');
+    Route::put('/user/{user}/update-foto', [UserController::class, 'update_foto'])->name('updateUserFoto');
+    Route::put('/user/{user}/update-password', [UserController::class, 'update_password'])->name('updateUserPassword');
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('destroyUser');
 
     // Periode
@@ -84,6 +85,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gl/subdivisi/{subdivisi}/{id}/edit', [GLKPIController::class, 'edit'])->name('glEditKPI');
     Route::put('/gl/subdivisi/{subdivisi}/{id}', [GLKPIController::class, 'update'])->name('glUpdateKPI');
     Route::delete('/gl/subdivisi/{subdivisi}/{id}', [GLKPIController::class, 'destroy'])->name('glDestroyKPI');
+
+    // Rekap Pencapaian SF GL KPI Individu
+    Route::get('/pencapaian-sf-kpi-individu-gl', [RekapPencapaianSFGLKPIController::class, 'index'])->name('rekapglkpi');
+    Route::post('/pencapaian-sf-kpi-individu-gl', [RekapPencapaianSFGLKPIController::class, 'store'])->name('rekapGLStoreKPI');
+    Route::get('/pencapaian-sf-kpi-individu-gl/{id}/edit', [RekapPencapaianSFGLKPIController::class, 'edit'])->name('rekapGLEditKPI');
+    Route::put('/pencapaian-sf-kpi-individu-gl/{id}', [RekapPencapaianSFGLKPIController::class, 'update'])->name('rekapGLUpdateKPI');
+    Route::delete('/pencapaian-sf-kpi-individu-gl/{id}', [RekapPencapaianSFGLKPIController::class, 'destroy'])->name('rekapGLDestroyKPI');
 
     // GL KPI General
     Route::get('/gl-general/{id}/pdf', [GLKPIGeneralController::class, 'makePdf'])->name('glkpiGeneralPdf');
@@ -153,6 +161,7 @@ Route::middleware(['auth'])->group(function () {
     // AJAX
     Route::get('/get-kamus/{id_kamus}', [KamusKPIController::class, 'getKamus'])->name('getKamus');
     Route::get('/get-kamus-general/{id_kamus}', [KamusKPIGeneralController::class, 'getKamus'])->name('getKamusGeneral');
+    Route::get('/get-kpi-individu-gl-periode', [RekapPencapaianSFGLKPIController::class, 'getKpiPeriodes'])->name('getRekapKpi');
 });
 
 // Login - Auth

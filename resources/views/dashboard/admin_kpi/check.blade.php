@@ -1,100 +1,100 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Pemeriksaan Data KPI Admin ' . $subdivisi])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>Pemeriksaan KPI Admin {{ $subdivisi }}</a></li>
+<li class="breadcrumb-item active"><a>Pemeriksaan KPI Admin {{ $subdivisi }}</a></li>
 @endsection
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex flex-column flex-sm-row">
-                    @if (Auth::user()->kategori == 'MASTER')
-                        <div style="min-width: 120px" class="flex-column flex-sm-row mx-auto mx-sm-0">
-                            <div class="my-0 text-center text-sm-start">
-                                <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
-                            </div>
-                            <select data-column="6" name="filter_subdivisi" id="filter_subdivisi"
-                                class="form-control select2" style="max-width: 120px;">
-                                <option value="">Pilih Filter</option>
-                                <option value="COMBEN">COMBEN</option>
-                                <option value="REKRUT">REKRUT</option>
-                                <option value="TND">TND</option>
-                                <option value="IR">IR</option>
-                            </select>
-                        </div>
-                    @endif
-                    <div style="min-width: 250px"
-                        class="ps-0 @if (Auth::user()->kategori == 'MASTER') ps-sm-3 @endif  pt-3 pt-sm-0 flex-column flex-sm-row mx-auto mx-sm-0">
-                        <div class="my-0 text-center text-sm-start">
-                            <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
-                        </div>
-                        <select data-column="5" name="filter_nama" id="filter_nama" class="form-control select2"
-                            style="max-width: 250px;">
-                            <option value="">Pilih Filter</option>
-                            @foreach ($adminUsers as $users)
-                                <option value="{{ ucfirst($users->nama) }}">
-                                    {{ ucfirst($users->nama) }}
-                                </option>
-                            @endforeach
-                        </select>
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex flex-column flex-sm-row">
+                @if (Auth::user()->kategori == 'MASTER')
+                <div style="min-width: 120px" class="flex-column flex-sm-row mx-auto mx-sm-0">
+                    <div class="my-0 text-center text-sm-start">
+                        <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
                     </div>
+                    <select data-column="6" name="filter_subdivisi" id="filter_subdivisi" class="form-control select2"
+                        style="max-width: 120px;">
+                        <option value="">Pilih Filter</option>
+                        <option value="COMBEN">COMBEN</option>
+                        <option value="REKRUT">REKRUT</option>
+                        <option value="TND">TND</option>
+                        <option value="IR">IR</option>
+                    </select>
                 </div>
-            </div>
-
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Periode</th>
-                                <th class="text-center text-nowrap">Point</th>
-                                <th class="text-center text-nowrap">Aktual Realisasi</th>
-                                <th class="text-center text-nowrap">Target</th>
-                                <th class="text-center text-nowrap">Nama</th>
-                                <th class="text-center text-nowrap">Sub Divisi</th>
-                                <th class="text-center text-nowrap">File</th>
-                                <th class="text-center text-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
+                @endif
+                <div style="min-width: 250px"
+                    class="ps-0 @if (Auth::user()->kategori == 'MASTER') ps-sm-3 @endif  pt-3 pt-sm-0 flex-column flex-sm-row mx-auto mx-sm-0">
+                    <div class="my-0 text-center text-sm-start">
+                        <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
+                    </div>
+                    <select data-column="5" name="filter_nama" id="filter_nama" class="form-control select2"
+                        style="max-width: 250px;">
+                        <option value="">Pilih Filter</option>
+                        @foreach ($adminUsers as $users)
+                        <option value="{{ ucfirst($users->nama) }}">
+                            {{ ucfirst($users->nama) }}
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
 
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">Reject KPI</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Periode</th>
+                            <th class="text-center text-nowrap">Point</th>
+                            <th class="text-center text-nowrap">Aktual Realisasi</th>
+                            <th class="text-center text-nowrap">Target</th>
+                            <th class="text-center text-nowrap">Nama</th>
+                            <th class="text-center text-nowrap">Sub Divisi</th>
+                            <th class="text-center text-nowrap">File</th>
+                            <th class="text-center text-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Reject KPI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <form enctype="multipart/form-data" id="formReject">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Alasan</label>
-                                <textarea name="alasan" id="alasan" class="form-control" cols="30" rows="3"></textarea>
-                            </div>
+                        <div class="form-group">
+                            <label>Alasan</label>
+                            <textarea name="alasan" id="alasan" class="form-control" cols="30" rows="3"></textarea>
                         </div>
-                        <div class="modal-footer d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                            <button type="button" class="btn btn-danger btn-reject">Reject</button>
-                        </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-danger btn-reject">Reject</button>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                $(document).ready(function() {
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
 
                     // Datatable
                     var dataTable = $('#tableData').DataTable({
@@ -396,7 +396,7 @@
                     });
 
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection

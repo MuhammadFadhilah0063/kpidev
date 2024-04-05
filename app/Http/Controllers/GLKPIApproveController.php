@@ -30,7 +30,7 @@ class GLKPIApproveController extends Controller
         if (request()->ajax()) {
 
             if (Auth::user()->subdivisi) {
-                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.user"])
+                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.periode", "kpi.user"])
                     ->whereHas('kpi', function ($query) {
                         $query->where('subdivisi', Auth::user()->subdivisi);
                         $query->where('id_user', Auth::user()->id);
@@ -38,7 +38,7 @@ class GLKPIApproveController extends Controller
                     ->latest()
                     ->get();
             } else {
-                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.user"])
+                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.periode", "kpi.user"])
                     ->latest()
                     ->get();
             }

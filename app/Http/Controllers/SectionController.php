@@ -36,7 +36,7 @@ class SectionController extends Controller
             $individual_kpis = GLKPI::where("subdivisi", $subdivisi)
                 ->where("status", 'wait')
                 ->orderBy("id", "DESC")
-                ->with("kamus", "user")
+                ->with("kamus", "user", "periode")
                 ->get();
             return DataTables::of($individual_kpis)
                 ->make(true);

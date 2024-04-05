@@ -90,7 +90,7 @@
                                 {{ $item->key_kamus->kamus->area_kinerja_utama }}
                             </td>
                         @endif
-                        <td class="text-start text-capitalize text-nowrap" style="min-width: 350px; max-width: 400px;">
+                        <td class="text-start text-capitalize" style="min-width: 350px; max-width: 400px;">
                             {{ formatText($item->key_kamus->indicator) }}
                         </td>
                         <td>{{ $item->key_kamus->bobot }}</td>

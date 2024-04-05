@@ -15,7 +15,7 @@ class SectionKPIGeneral extends Model
     protected $table = 'section_kpi_generals';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'file', 'total', 'tahun', "parameter", "created_at", "updated_at",
+        'file', 'total', 'periode', "periode_awal", "periode_akhir", "parameter", "created_at", "updated_at",
     ];
 
     public function category_items(): HasMany

@@ -44,7 +44,6 @@
                             <th class="text-center text-nowrap">No.</th>
                             <th class="text-center text-nowrap">Periode</th>
                             <th class="text-center text-nowrap">Point</th>
-                            <th class="text-center text-nowrap">Aktual Realisasi</th>
                             <th class="text-center text-nowrap">Pencapaian SF</th>
                             <th class="text-center text-nowrap">Target</th>
                             <th class="text-center text-nowrap">Status</th>
@@ -64,14 +63,14 @@
 
     {{-- Modal --}}
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form enctype="multipart/form-data">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form enctype="multipart/form-data">
                         <div class="form-group">
                             <label>User</label>
                             @if (Auth::user()->kategori == 'MASTER')
@@ -93,8 +92,9 @@
                         <div class="form-group pt-3">
                             <label>Periode</label>
                             <select name="periode" id="periode" class="form-control select3">
+                                <option value="">Pilih Periode</option>
                                 @foreach ($periodes as $periode)
-                                <option value="{{ $periode->periode }}">
+                                <option value="{{ $periode->id }}">
                                     {{ ucfirst($periode->periode) }}</option>
                                 @endforeach
                             </select>
@@ -117,12 +117,7 @@
                         </div>
 
                         <div class="form-group pt-3">
-                            <label>Aktual Realisasi</label>
-                            <input type="text" class="form-control" id="aktual_realisasi">
-                        </div>
-
-                        <div class="form-group pt-3">
-                            <label>Pencapaian SF</label>
+                            <label>Achievment (Diisi Persentasi Pencapaian SF)</label>
                             <input type="text" class="form-control" id="pencapaian_sf">
                         </div>
 
@@ -151,12 +146,12 @@
                             <iframe style="display: none; margin: 0 auto;" id="pdfIframe" frameborder="0" height="400px"
                                 width="100%"></iframe>
                         </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                        <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                    <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -224,7 +219,7 @@
                         serverSide: true,
                         ajax: "{{ url()->current() }}",
                         'createdRow': function(row, data, dataIndex) {
-                            $('td:eq(7)', row).css('min-width', '450px');
+                            $('td:eq(6)', row).css('min-width', '300px');
                         },
                         columns: [{
                                 data: 'id',
@@ -236,13 +231,10 @@
                                 }
                             },
                             {
-                                data: 'periode'
+                                data: 'periode.periode'
                             },
                             {
                                 data: 'kamus.pointkpi'
-                            },
-                            {
-                                data: 'aktual_realisasi'
                             },
                             {
                                 data: 'pencapaian_sf'
@@ -300,11 +292,11 @@
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 6, 8, 9, 10],
+                                targets: [0, 1, 3, 4, 5, 7, 8, 9],
                                 className: "text-center align-middle text-capitalize text-nowrap"
                             },
                             {
-                                targets: [7],
+                                targets: [6],
                                 className: "align-middle",
                             },
                             {
@@ -332,10 +324,10 @@
 
                         if ($(".btn-aksi").text() == "EDIT") {
                             // Hapus invalid
-                            clearInvalidInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "file", "id_user"]);
+                            clearInvalidInput(["periode", "id_kamus", "pencapaian_sf", "file", "id_user"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "subdivisi",
                                 "id_user"
                             ]);
 
@@ -346,10 +338,10 @@
                             var url = "{{ url()->current() }}/" + id;
                         } else if ($(".btn-aksi").text() == "TAMBAH") {
                             // Hapus invalid
-                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "aktual_realisasi", "pencapaian_sf"]);
+                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "pencapaian_sf"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "aktual_realisasi", "pencapaian_sf", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "subdivisi",
                                 "id_user"
                             ]);
                             var url = "{{ url()->current() }}";
@@ -427,9 +419,13 @@
                                         $('#id_user').val(response.data.id_user);
                                     @endif
 
-                                    $('#periode').val(response.data.periode).trigger('change');
+                                    // $("#periode").find('option').filter(function() {
+                                    //     // Menggunakan .text() untuk membandingkan teks dalam opsi
+                                    //     return $(this).text() === response.data.periode;
+                                    // }).prop('selected', true);
+
+                                    $('#periode').val(response.data.id_periode).trigger('change');
                                     $('#id_kamus').val(response.data.id_kamus).trigger('change');
-                                    $('#aktual_realisasi').val(response.data.aktual_realisasi);
                                     $('#pencapaian_sf').val(response.data.pencapaian_sf);
                                     $('#subdivisi').val(response.data.subdivisi).trigger(
                                         'change');
@@ -528,8 +524,8 @@
 
                     // Proses tutup modal
                     $('#modal').on('hidden.bs.modal', function() {
-                        clearInput(["aktual_realisasi", "file", "pencapaian_sf"]);
-                        clearInvalidInput(["aktual_realisasi", "file", "pencapaian_sf"]);
+                        clearInput(["file", "pencapaian_sf"]);
+                        clearInvalidInput(["file", "pencapaian_sf"]);
 
                         // Hapus pdf preview
                         var preview = $("#pdfIframe");

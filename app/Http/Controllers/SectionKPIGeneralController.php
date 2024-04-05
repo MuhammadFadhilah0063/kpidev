@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GLKPIGeneral;
 use App\Models\SectionKPIGeneral;
 use App\Models\KamusKPIGeneral;
+use App\Models\Periode;
 use App\Models\SectionKPIGeneralCategoryGoalItem;
 use App\Models\SectionKPIGeneralCategoryItem;
-use App\Models\User;
 use App\Services\BadgeService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,20 +42,50 @@ class SectionKPIGeneralController extends Controller
         }
 
         // Kamus General Berdasarkan Cari Yang Aktif / Memiliki Baris
-        $kamuss = KamusKPIGeneral::with("indicator_items")
-            ->whereNotNull("baris")
-            ->orderBy("subdivisi", "asc")
-            ->orderBy("baris", "asc")
+        $datakamus = KamusKPIGeneral::select("area_kinerja_utama")
+            ->where("kategori", "GROUP LEADER")
             ->get();
 
-        return view('dashboard.section_kpi_generals.index', compact("countKPI", "countKPIGL", "kamuss"));
+        // Mengelompokkan data berdasarkan nama
+        $groupedKamuss = $datakamus->groupBy('area_kinerja_utama')->toArray();
+
+        // Mengonversi hasilnya menjadi array
+        $kamuss = [];
+
+        // Menghitung berapa kali setiap nama muncul
+        $nameCounts = $datakamus->countBy('area_kinerja_utama');
+
+        // Kamus dengan nama minimal 2 kali muncul
+        foreach ($nameCounts as $nama => $count) {
+            if ($count >= 2) {
+                $kamuss[] = ['area_kinerja_utama' => $nama];
+            }
+        }
+
+        $kamuss;
+
+        $periodes = Periode::orderBy("id", "ASC")->get();
+
+        return view('dashboard.section_kpi_generals.index', compact("countKPI", "countKPIGL", "kamuss", "periodes"));
     }
 
     public function store(Request $request)
     {
         try {
-
             DB::beginTransaction();
+
+            $periode = "";
+
+            // Ubah format periode awal dan akhir
+            // Konversi tanggal ke objek Carbon
+            $periode_awal = Carbon::parse($request->periode_awal);
+            $periode_akhir = Carbon::parse($request->periode_akhir);
+
+            // Ubah format tanggal menjadi "NamaBulan Tahun" (misal: "Januari 2024")
+            $periode_awal_format = $periode_awal->translatedFormat('F');
+            $periode_akhir_format = $periode_akhir->translatedFormat('F Y');
+
+            $periode = $periode_awal_format . " - " . $periode_akhir_format;
 
             // Buat KPI General
             if ($request->hasFile('file')) {
@@ -60,15 +93,19 @@ class SectionKPIGeneralController extends Controller
                 $filename = $request->file->hashName();
                 $request->file->move('storage/file/', $filename);
 
-                $kpi = SectionKPIGeneral::create([
-                    'tahun'     => $request->tahun,
+                $kpiGeneral = SectionKPIGeneral::create([
+                    'periode'       => $periode,
+                    'periode_awal'  => $request->periode_awal,
+                    'periode_akhir' => $request->periode_akhir,
                     'parameter' => $request->parameter,
                     'total'     => 0,
                     'file'      => $filename,
                 ]);
             } else {
-                $kpi = SectionKPIGeneral::create([
-                    'tahun'     => $request->tahun,
+                $kpiGeneral = SectionKPIGeneral::create([
+                    'periode'       => $periode,
+                    'periode_awal'  => $request->periode_awal,
+                    'periode_akhir' => $request->periode_akhir,
                     'parameter' => $request->parameter,
                     'total'     => 0,
                 ]);
@@ -93,7 +130,7 @@ class SectionKPIGeneralController extends Controller
                     $goal["metric_description"]  = trim($goal_temp[1], '"');
                     $goal["metric_scale"]        = trim($goal_temp[2], '"');
                     $goal["weight"]              = trim($goal_temp[3], '"');
-                    $goal["nilai_pencapaian_sf"] = trim($goal_temp[4], '"');
+                    $goal["filters"]             = helperArrayFilterKPI(trim(trim($goal_temp[4], '"'), "|"));
 
                     $goals[] = $goal;
                 }
@@ -105,9 +142,10 @@ class SectionKPIGeneralController extends Controller
             }
 
             // Ambil id KPI
-            $id_kpi = $kpi->id;
-
+            $id_kpi = $kpiGeneral->id;
             $totalWeight = 0;
+            $awal = $request->periode_awal;
+            $akhir = $request->periode_akhir;
 
             // Bikin category item kpi
             foreach ($bsc_categories as $category) {
@@ -124,18 +162,67 @@ class SectionKPIGeneralController extends Controller
                 foreach ($category['goals'] as $goal) {
                     // Hitung Total KPI General
                     $totalWeight += floatval(trim($goal['weight'], '"'));
+                    $rata_rata_sf = 0;
 
-                    // Nilai SF
-                    $nilai_sf = floatval(trim($goal['nilai_pencapaian_sf'], '"'));
+                    // Hitung rata-rata penilaian atau konversi SF
+                    $data_sf = [];
+                    for ($index = 0; $index < count($goal['filters']); $index++) {
+
+                        if ($goal['filters'][$index][0] == "ALL TEAM") {
+
+                            // Untuk all team
+                            $kpis = GLKPIGeneral::with(["items", "items.key_kamus", "items.key_kamus.kamus", "periode"])
+                                ->where("status", "approve")
+                                ->whereHas("periode", function ($query) use ($awal, $akhir) {
+                                    $query->whereBetween("tanggal", [$awal, $akhir]);
+                                })
+                                ->get();
+
+                            foreach ($kpis as $kpi) {
+                                foreach ($kpi['items'] as $item) {
+                                    if ($item["key_kamus"]["kamus"]["area_kinerja_utama"] == $goal['filters'][$index][2]) {
+                                        $data_sf[] = $item["konversi_sf"];
+                                    }
+                                }
+                            }
+                        } else {
+
+                            // Untuk yang mempunyai subdivisi
+                            $kpis = GLKPIGeneral::with(["items", "items.key_kamus", "items.key_kamus.kamus", "periode"])
+                                ->where("status", "approve")
+                                ->where("subdivisi", $goal['filters'][$index][0])
+                                ->whereHas("periode", function ($query) use ($awal, $akhir) {
+                                    $query->whereBetween("tanggal", [$awal, $akhir]);
+                                })
+                                ->get();
+
+                            foreach ($kpis as $kpi) {
+                                foreach ($kpi['items'] as $item) {
+                                    // Baris
+                                    foreach ($goal['filters'][$index][1] as $baris) {
+                                        if ($item["key_kamus"]["kamus"]["baris"] == $baris) {
+                                            $data_sf[] = $item["konversi_sf"];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $total_sf  = array_sum($data_sf);
+                    $jumlah_sf = count($data_sf);
+                    if ($total_sf != 0) {
+                        $rata_rata_sf = round($total_sf / $jumlah_sf, 2);
+                    }
 
                     // Konversi bintang dari nilai sf
-                    if ($nilai_sf > 110) {
+                    if ($rata_rata_sf > 110) {
                         $bintang = "Bintang 5";
-                    } else if ($nilai_sf >= 101) {
+                    } else if ($rata_rata_sf >= 101) {
                         $bintang = "Bintang 4";
-                    } else if ($nilai_sf >= 91) {
+                    } else if ($rata_rata_sf >= 91) {
                         $bintang = "Bintang 3";
-                    } else if ($nilai_sf >= 80) {
+                    } else if ($rata_rata_sf >= 80) {
                         $bintang = "Bintang 2";
                     } else {
                         $bintang = "Bintang 1";
@@ -147,14 +234,15 @@ class SectionKPIGeneralController extends Controller
                         "metric_description"   => ucfirst(trim($goal['metric_description'], '"')),
                         "metric_scale"         => ucfirst(trim($goal['metric_scale'], '"')),
                         "weight"               => floatval(trim($goal['weight'], '"')),
-                        "nilai_pencapaian_sf"  => $nilai_sf,
+                        "nilai_pencapaian_sf"  => $rata_rata_sf,
                         "konversi_bintang"     => $bintang,
+                        "filters"              => json_encode($goal['filters']),
                     ]);
                 }
             }
 
             // Update Total Pada KPI General
-            $kpi->update(["total" => floatval($totalWeight)]);
+            $kpiGeneral->update(["total" => floatval($totalWeight)]);
 
             DB::commit();
             return response()->json([
@@ -200,12 +288,27 @@ class SectionKPIGeneralController extends Controller
 
             DB::beginTransaction();
 
+            $periode = "";
+
+            // Ubah format periode awal dan akhir
+            // Konversi tanggal ke objek Carbon
+            $periode_awal = Carbon::parse($request->periode_awal);
+            $periode_akhir = Carbon::parse($request->periode_akhir);
+
+            // Ubah format tanggal menjadi "NamaBulan Tahun" (misal: "Januari 2024")
+            $periode_awal_format = $periode_awal->translatedFormat('F');
+            $periode_akhir_format = $periode_akhir->translatedFormat('F Y');
+
+            $periode = $periode_awal_format . " - " . $periode_akhir_format;
+
             $kpi = SectionKPIGeneral::find($id);
             $fileKpi = $kpi->file;
 
             // Update kpi general
             $kpi->update([
-                'tahun'     => $request->tahun,
+                'periode'       => $periode,
+                'periode_awal'  => $request->periode_awal,
+                'periode_akhir' => $request->periode_akhir,
                 'parameter' => $request->parameter,
             ]);
 
@@ -249,7 +352,7 @@ class SectionKPIGeneralController extends Controller
                     $goal["metric_description"]  = trim($goal_temp[1], '"');
                     $goal["metric_scale"]        = trim($goal_temp[2], '"');
                     $goal["weight"]              = trim($goal_temp[3], '"');
-                    $goal["nilai_pencapaian_sf"] = trim($goal_temp[4], '"');
+                    $goal["filters"]             = helperArrayFilterKPI(trim(trim($goal_temp[4], '"'), "|"));
 
                     $goals[] = $goal;
                 }
@@ -264,6 +367,8 @@ class SectionKPIGeneralController extends Controller
             SectionKPIGeneralCategoryItem::where("id_section_kpi", $kpi->id)->delete();
 
             $totalWeight = 0;
+            $awal = $request->periode_awal;
+            $akhir = $request->periode_akhir;
 
             // Update category item kpi
             foreach ($bsc_categories as $category) {
@@ -281,18 +386,67 @@ class SectionKPIGeneralController extends Controller
                 foreach ($category['goals'] as $goal) {
                     // Hitung Total KPI General
                     $totalWeight += floatval(trim($goal['weight'], '"'));
+                    $rata_rata_sf = 0;
 
-                    // Nilai SF
-                    $nilai_sf = floatval(trim($goal['nilai_pencapaian_sf'], '"'));
+                    // Hitung rata-rata penilaian atau konversi SF
+                    $data_sf = [];
+                    for ($index = 0; $index < count($goal['filters']); $index++) {
+
+                        if ($goal['filters'][$index][0] == "ALL TEAM") {
+
+                            // Untuk all team
+                            $kpi_generals = GLKPIGeneral::with(["items", "items.key_kamus", "items.key_kamus.kamus", "periode"])
+                                ->where("status", "approve")
+                                ->whereHas("periode", function ($query) use ($awal, $akhir) {
+                                    $query->whereBetween("tanggal", [$awal, $akhir]);
+                                })
+                                ->get();
+
+                            foreach ($kpi_generals as $kpi_general) {
+                                foreach ($kpi_general['items'] as $item) {
+                                    if ($item["key_kamus"]["kamus"]["area_kinerja_utama"] == $goal['filters'][$index][2]) {
+                                        $data_sf[] = $item["konversi_sf"];
+                                    }
+                                }
+                            }
+                        } else {
+
+                            // Untuk yang mempunyai subdivisi
+                            $kpi_generals = GLKPIGeneral::with(["items", "items.key_kamus", "items.key_kamus.kamus", "periode"])
+                                ->where("status", "approve")
+                                ->where("subdivisi", $goal['filters'][$index][0])
+                                ->whereHas("periode", function ($query) use ($awal, $akhir) {
+                                    $query->whereBetween("tanggal", [$awal, $akhir]);
+                                })
+                                ->get();
+
+                            foreach ($kpi_generals as $kpi_general) {
+                                foreach ($kpi_general['items'] as $item) {
+                                    // Baris
+                                    foreach ($goal['filters'][$index][1] as $baris) {
+                                        if ($item["key_kamus"]["kamus"]["baris"] == $baris) {
+                                            $data_sf[] = $item["konversi_sf"];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $total_sf  = array_sum($data_sf);
+                    $jumlah_sf = count($data_sf);
+                    if ($total_sf != 0) {
+                        $rata_rata_sf = round($total_sf / $jumlah_sf, 2);
+                    }
 
                     // Konversi bintang dari nilai sf
-                    if ($nilai_sf > 110) {
+                    if ($rata_rata_sf > 110) {
                         $bintang = "Bintang 5";
-                    } else if ($nilai_sf >= 101) {
+                    } else if ($rata_rata_sf >= 101) {
                         $bintang = "Bintang 4";
-                    } else if ($nilai_sf >= 91) {
+                    } else if ($rata_rata_sf >= 91) {
                         $bintang = "Bintang 3";
-                    } else if ($nilai_sf >= 80) {
+                    } else if ($rata_rata_sf >= 80) {
                         $bintang = "Bintang 2";
                     } else {
                         $bintang = "Bintang 1";
@@ -304,8 +458,9 @@ class SectionKPIGeneralController extends Controller
                         "metric_description"   => ucfirst(trim($goal['metric_description'], '"')),
                         "metric_scale"         => ucfirst(trim($goal['metric_scale'], '"')),
                         "weight"               => floatval(trim($goal['weight'], '"')),
-                        "nilai_pencapaian_sf"  => $nilai_sf,
+                        "nilai_pencapaian_sf"  => $rata_rata_sf,
                         "konversi_bintang"     => $bintang,
+                        "filters"              => json_encode($goal['filters']),
                     ]);
                 }
             }
@@ -319,6 +474,7 @@ class SectionKPIGeneralController extends Controller
                 "message" => "Berhasil edit data kpi!",
             ]);
         } catch (QueryException $err) {
+            DB::rollback();
             return response()->json([
                 "status" => "failed",
                 "message" => "Gagal edit data kpi!",

@@ -1,167 +1,178 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data Kamus General'])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>Kamus General</a></li>
+<li class="breadcrumb-item active"><a>Kamus General</a></li>
 @endsection
 
 @if (Auth::user()->kategori == 'MASTER')
-    @push('button')
-        <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-            Tambah
-        </button>
-    @endpush
+@push('button')
+<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+    Tambah
+</button>
+@endpush
 @endif
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex flex-column flex-sm-row">
-                    @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
-                        <div style="min-width: 120px" class="flex-column flex-sm-row mx-auto mx-sm-0">
-                            <div class="my-0 text-center text-sm-start">
-                                <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
-                            </div>
-                            <select data-column="2" name="filter_subdivisi" id="filter_subdivisi"
-                                class="form-control select2" style="max-width: 120px;">
-                                <option value="">Pilih Filter</option>
-                                <option value="COMBEN">COMBEN</option>
-                                <option value="REKRUT">REKRUT</option>
-                                <option value="TND">TND</option>
-                                <option value="IR">IR</option>
-                                <option value="ALL">ALL</option>
-                            </select>
-                        </div>
-                    @endif
-
-                    <div style="min-width: 200px" class="ps-0 ps-sm-3 pt-3 pt-sm-0 flex-column flex-sm-row mx-auto mx-sm-0">
-                        <div class="my-0 text-center text-sm-start">
-                            <label for="filter_kategori" class="pb-2 fw-bold">Filter Kategori</label>
-                        </div>
-                        <select data-column="3" name="filter_kategori" id="filter_kategori" class="form-control select2"
-                            style="max-width: 200px;">
-                            <option value="">Pilih Filter</option>
-                            <option value="ADMIN">ADMIN</option>
-                            <option value="GROUP LEADER">GROUP LEADER</option>
-                        </select>
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex flex-column flex-sm-row">
+                @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
+                <div style="min-width: 120px" class="flex-column flex-sm-row mx-auto mx-sm-0">
+                    <div class="my-0 text-center text-sm-start">
+                        <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
                     </div>
+                    <select data-column="2" name="filter_subdivisi" id="filter_subdivisi" class="form-control select2"
+                        style="max-width: 120px;">
+                        <option value="">Pilih Filter</option>
+                        <option value="COMBEN">COMBEN</option>
+                        <option value="REKRUT">REKRUT</option>
+                        <option value="TND">TND</option>
+                        <option value="IR">IR</option>
+                        <option value="ALL">ALL</option>
+                    </select>
                 </div>
-            </div>
+                @endif
 
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Area Kinerja Utama</th>
-                                <th class="text-center text-nowrap">Subdivisi</th>
-                                <th class="text-center text-nowrap">Kategori</th>
-                                <th class="text-center text-nowrap">Baris</th>
-                                @if (Auth::user()->kategori == 'MASTER')
-                                    <th class="text-center text-nowrap">Aksi</th>
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
+                <div style="min-width: 200px" class="ps-0 ps-sm-3 pt-3 pt-sm-0 flex-column flex-sm-row mx-auto mx-sm-0">
+                    <div class="my-0 text-center text-sm-start">
+                        <label for="filter_kategori" class="pb-2 fw-bold">Filter Kategori</label>
+                    </div>
+                    <select data-column="3" name="filter_kategori" id="filter_kategori" class="form-control select2"
+                        style="max-width: 200px;">
+                        <option value="">Pilih Filter</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="GROUP LEADER">GROUP LEADER</option>
+                    </select>
                 </div>
             </div>
         </div>
+
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Area Kinerja Utama</th>
+                            <th class="text-center text-nowrap">Subdivisi</th>
+                            <th class="text-center text-nowrap">Kategori</th>
+                            <th class="text-center text-nowrap">Baris</th>
+                            @if (Auth::user()->kategori == 'MASTER')
+                            <th class="text-center text-nowrap">Aksi</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+            </div>
+        </div>
     </div>
+</div>
 
-    {{-- Modal Tambah dan Edit --}}
-    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KAMUS BARU</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+{{-- Modal Tambah dan Edit --}}
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KAMUS BARU</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
                 <form enctype="multipart/form-data">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="form-group">
-                                    <label class="pb-1">Subdivisi</label>
-                                    <select class="form-control select3" name="subdivisi" id="subdivisi">
-                                        <option value="COMBEN">COMBEN</option>
-                                        <option value="REKRUT">REKRUT</option>
-                                        <option value="TND">TND</option>
-                                        <option value="IR">IR</option>
-                                        <option value="ALL">ALL</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="pb-1">Kategori</label>
-                                    <select class="form-control select3" name="kategori" id="kategori">
-                                        <option value="GROUP LEADER">GROUP LEADER</option>
-                                        <option value="ADMIN">ADMIN</option>
-                                    </select>
-                                </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label class="pb-1">Subdivisi</label>
+                                <select class="form-control select3" name="subdivisi" id="subdivisi">
+                                    <option value="COMBEN">COMBEN</option>
+                                    <option value="REKRUT">REKRUT</option>
+                                    <option value="TND">TND</option>
+                                    <option value="IR">IR</option>
+                                    <option value="ALL">ALL</option>
+                                </select>
                             </div>
                         </div>
-
-                        <div class="form-group row-target">
-                            <label class="pt-3 pb-1">Area Kinerja Utama</label>
-                            <input type="text" name="area_kinerja_utama" id="area_kinerja_utama" class="form-control"
-                                required placeholder="Area Kinerja Utama">
-                        </div>
-
-                        <div class="box-container">
-                            <div data-boxid="1" class="box-item border rounded p-2 mt-3">
-                                <input type="hidden" name="id">
-                                <div class="form-group">
-                                    <label class="pb-1">Key Performance Indicators 1</label>
-                                    <textarea required class="form-control" name="key_performance_indicators" cols="30" rows="4"></textarea>
-                                    <small class="fst-italic">
-                                        Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
-                                    </small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="pt-3 pb-1">Bobot</label>
-                                    <input type="number" name="bobot" class="form-control" required placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="pt-3 pb-1">Target</label>
-                                    <textarea required class="form-control" name="target" cols="30" rows="4"></textarea>
-                                    <small class="fst-italic">
-                                        Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
-                                    </small>
-                                </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="pb-1">Kategori</label>
+                                <select class="form-control select3" name="kategori" id="kategori">
+                                    <option value="GROUP LEADER">GROUP LEADER</option>
+                                    <option value="ADMIN">ADMIN</option>
+                                </select>
                             </div>
                         </div>
-
-                        <div class="row text-center">
-                            <div class="col text-center pt-3">
-                                <button type="button" class="btn btn-sm btn-primary btn-add-indicator">
-                                    + Key Performance
-                                    Indicators
-                                </button>
-                            </div>
-                        </div>
-
                     </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
-                        <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
+
+                    <div class="form-group row-target">
+                        <label class="pt-3 pb-1">Area Kinerja Utama</label>
+                        <input type="text" name="area_kinerja_utama" id="area_kinerja_utama" class="form-control"
+                            required placeholder="Area Kinerja Utama">
                     </div>
+
+                    <div class="box-container">
+                        <div data-boxid="1" class="box-item border rounded p-2 mt-3">
+                            <input type="hidden" name="id">
+                            <div class="form-group">
+                                <label class="pb-1">Key Performance Indicators 1</label>
+                                <textarea required class="form-control" name="key_performance_indicators" cols="30"
+                                    rows="4"></textarea>
+                                <small class="fst-italic">
+                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                    <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                        title="Contoh pengisian!"
+                                        class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                        <i class="bi bi-info-lg"></i>
+                                    </a>
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="pt-3 pb-1">Bobot</label>
+                                <input type="number" name="bobot" class="form-control" required placeholder="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="pt-3 pb-1">Target</label>
+                                <textarea required class="form-control" name="target" cols="30" rows="4"></textarea>
+                                <small class="fst-italic">
+                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                    <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                        title="Contoh pengisian!"
+                                        class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                        <i class="bi bi-info-lg"></i>
+                                    </a>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col text-center pt-3">
+                            <button type="button" class="btn btn-sm btn-primary btn-add-indicator">
+                                + Key Performance
+                                Indicators
+                            </button>
+                        </div>
+                    </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">TUTUP</button>
+                <button type="button" class="btn btn-primary btn-aksi">TAMBAH</button>
                 </form>
             </div>
         </div>
     </div>
+</div>
 
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
+@push('scripts')
+<script>
+    $(document).ready(function() {
 
                 // Button add new indicator
                 $('.btn-add-indicator').on("click", function(event) {
@@ -183,7 +194,11 @@
                                 </div>
                                 <textarea required class="form-control" name="key_performance_indicators" cols="30" rows="4"></textarea>
                                 <small class="fst-italic">
-                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                                title="Contoh pengisian!"
+                                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
                                 </small>
                             </div>
 
@@ -196,7 +211,11 @@
                                 <label class="pt-3 pb-1">Target</label>
                                 <textarea required class="form-control" name="target" cols="30" rows="4"></textarea>
                                 <small class="fst-italic">
-                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                                title="Contoh pengisian!"
+                                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
                                 </small>
                             </div>
                         </div>`;
@@ -343,7 +362,11 @@
                                                 </div>
                                                 <textarea required class="form-control" name="key_performance_indicators" cols="30" rows="4"></textarea>
                                                 <small class="fst-italic">
-                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                                title="Contoh pengisian!"
+                                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
                                                 </small>
                                             </div>
 
@@ -356,7 +379,11 @@
                                                 <label class="pt-3 pb-1">Target</label>
                                                 <textarea required class="form-control" name="target" cols="30" rows="4"></textarea>
                                                 <small class="fst-italic">
-                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat.
+                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                                title="Contoh pengisian!"
+                                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
                                                 </small>
                                             </div>
                                         </div>`;
@@ -558,7 +585,7 @@
                     theme: 'bootstrap',
                 });
             });
-        </script>
-    @endpush
-    </div>
+</script>
+@endpush
+</div>
 @endsection

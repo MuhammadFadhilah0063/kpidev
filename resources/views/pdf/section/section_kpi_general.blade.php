@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="data:image/png;base64,{{ base64_encode(file_get_contents('assets/icons/ICONPPA.png')) }}" rel="icon"
         type="image/png">
-    <title>KPI {{ $kpi->tahun }} HCGA SITE (SH HC)</title>
+    <title>KPI {{ $kpi->periode }} HCGA SITE (SH HC)</title>
 
     <style>
         body {
@@ -62,7 +62,7 @@
 
         <div class="row" style="margin-top: 30px;">
             <span class="fw-bold d-inline-block pb-1" style="font-size: 12px">
-                KPI {{ $kpi->tahun }} HCGA SITE (SH HC)
+                KPI {{ strtoupper($kpi->periode) }} HCGA SITE (SH HC)
             </span>
             <table>
                 <tr class="tr-data">
@@ -78,68 +78,68 @@
                 </tr>
 
                 @foreach ($kpi->category_items as $index => $category)
-                    {{-- @if (count($category->goal_items) == 1) --}}
-                    @if ($index == 0)
-                        {{-- --}}
-                        @foreach ($category->goal_items as $i => $goal)
-                            @if ($i == 0)
-                                <tr class="tr-data">
-                                    <td class="td-no">{{ $index + 1 }}</td>
-                                    <td>{{ $category->bsc_category }}</td>
-                                    <td>{{ $goal->goal_name }}</td>
-                                    <td>{{ formatText($goal->metric_description) }}</td>
-                                    <td>{{ formatText($goal->metric_scale) }}</td>
-                                    <td>{{ formatText($kpi->parameter) }}</td>
-                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
-                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
-                                    <td class="td-weight">{{ $goal->weight }}%</td>
-                                </tr>
-                            @else
-                                <tr class="tr-data">
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ $goal->goal_name }}</td>
-                                    <td>{{ formatText($goal->metric_description) }}</td>
-                                    <td>{{ formatText($goal->metric_scale) }}</td>
-                                    <td></td>
-                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
-                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
-                                    <td class="td-weight">{{ $goal->weight }}%</td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        {{-- --}}
-                    @else
-                        {{-- --}}
-                        @foreach ($category->goal_items as $i => $goal)
-                            @if ($i == 0)
-                                <tr class="tr-data">
-                                    <td class="td-no">{{ $index + 1 }}</td>
-                                    <td>{{ $category->bsc_category }}</td>
-                                    <td>{{ $goal->goal_name }}</td>
-                                    <td>{{ formatText($goal->metric_description) }}</td>
-                                    <td>{{ formatText($goal->metric_scale) }}</td>
-                                    <td></td>
-                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
-                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
-                                    <td class="td-weight">{{ $goal->weight }}%</td>
-                                </tr>
-                            @else
-                                <tr class="tr-data">
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ $goal->goal_name }}</td>
-                                    <td>{{ formatText($goal->metric_description) }}</td>
-                                    <td>{{ formatText($goal->metric_scale) }}</td>
-                                    <td></td>
-                                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
-                                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
-                                    <td class="td-weight">{{ $goal->weight }}%</td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        {{-- --}}
-                    @endif
+                {{-- @if (count($category->goal_items) == 1) --}}
+                @if ($index == 0)
+                {{-- --}}
+                @foreach ($category->goal_items as $i => $goal)
+                @if ($i == 0)
+                <tr class="tr-data">
+                    <td class="td-no">{{ $index + 1 }}</td>
+                    <td>{{ $category->bsc_category }}</td>
+                    <td>{{ $goal->goal_name }}</td>
+                    <td>{{ formatText($goal->metric_description) }}</td>
+                    <td>{{ formatText($goal->metric_scale) }}</td>
+                    <td>{{ formatText($kpi->parameter) }}</td>
+                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                    <td class="td-weight">{{ $goal->weight }}%</td>
+                </tr>
+                @else
+                <tr class="tr-data">
+                    <td></td>
+                    <td></td>
+                    <td>{{ $goal->goal_name }}</td>
+                    <td>{{ formatText($goal->metric_description) }}</td>
+                    <td>{{ formatText($goal->metric_scale) }}</td>
+                    <td></td>
+                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                    <td class="td-weight">{{ $goal->weight }}%</td>
+                </tr>
+                @endif
+                @endforeach
+                {{-- --}}
+                @else
+                {{-- --}}
+                @foreach ($category->goal_items as $i => $goal)
+                @if ($i == 0)
+                <tr class="tr-data">
+                    <td class="td-no">{{ $index + 1 }}</td>
+                    <td>{{ $category->bsc_category }}</td>
+                    <td>{{ $goal->goal_name }}</td>
+                    <td>{{ formatText($goal->metric_description) }}</td>
+                    <td>{{ formatText($goal->metric_scale) }}</td>
+                    <td></td>
+                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                    <td class="td-weight">{{ $goal->weight }}%</td>
+                </tr>
+                @else
+                <tr class="tr-data">
+                    <td></td>
+                    <td></td>
+                    <td>{{ $goal->goal_name }}</td>
+                    <td>{{ formatText($goal->metric_description) }}</td>
+                    <td>{{ formatText($goal->metric_scale) }}</td>
+                    <td></td>
+                    <td class="text-center">{{ $goal->nilai_pencapaian_sf }}</td>
+                    <td class="text-center">{{ $goal->konversi_bintang }}</td>
+                    <td class="td-weight">{{ $goal->weight }}%</td>
+                </tr>
+                @endif
+                @endforeach
+                {{-- --}}
+                @endif
                 @endforeach
 
                 <tr class="tr-data total-value">
