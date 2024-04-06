@@ -52,10 +52,15 @@ class RekapPencapaianSFGLKPIController extends Controller
         }
 
         $periodes = Periode::orderBy("id", "desc")->get();
+        if (Auth::user()->kategori == "GROUP LEADER") {
+            $points = Kamuskpi::where("kategori", "GROUP LEADER")->where("subdivisi", Auth::user()->subdivisi)->get();
+        } else {
+            $points = Kamuskpi::where("kategori", "GROUP LEADER")->get();
+        }
 
         if (Auth::user()->kategori == "MASTER" || Auth::user()->kategori == "SECTION") {
             $users = User::where("kategori", "GROUP LEADER")->get();
-            return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "users"));
+            return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "users"));
         }
 
         // Ambil data KPI
@@ -72,7 +77,7 @@ class RekapPencapaianSFGLKPIController extends Controller
 
         $pointkpis = array_unique($pointkpis_temp);
 
-        return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "pointkpis"));
+        return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "pointkpis"));
     }
 
     public function store(Request $request)
