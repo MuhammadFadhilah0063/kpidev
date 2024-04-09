@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GLKPIGeneral;
 use App\Models\GLKPIGeneralApprove;
 use App\Models\Periode;
 use App\Models\User;
@@ -29,17 +30,16 @@ class GLKPIGeneralApproveController extends Controller
         // Yajra DataTables
         if (request()->ajax()) {
 
-            if (Auth::user()->subdivisi) {
-                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user", "kpi.periode"])
-                    ->whereHas('kpi', function ($query) {
-                        $query->where('subdivisi', Auth::user()->subdivisi);
-                        $query->where('id_user', Auth::user()->id);
-                    })
-                    ->latest()
+            if (Auth::user()->kategori == "MASTER") {
+                $kpis = GLKPIGeneral::where("status", "approve")
+                    ->orderBy("id", "DESC")
+                    ->with(["user", "periode"])
                     ->get();
             } else {
-                $kpis = GLKPIGeneralApprove::with(["kpi", "kpi.user", "kpi.periode"])
-                    ->latest()
+                $kpis = GLKPIGeneral::where("status", "approve")
+                    ->where("subdivisi", Auth::user()->subdivisi)
+                    ->orderBy("id", "DESC")
+                    ->with(["user", "periode"])
                     ->get();
             }
 

@@ -71,7 +71,6 @@
                                 <th class="text-center text-nowrap">Periode</th>
                                 <th class="text-center text-nowrap">nama</th>
                                 <th class="text-center text-nowrap">Sub Divisi</th>
-                                <th class="text-center text-nowrap">Tanggal Approve</th>
                                 <th class="text-center text-nowrap">KPI</th>
                                 <th class="text-center text-nowrap">File</th>
                             </tr>
@@ -102,45 +101,25 @@
                                 }
                             },
                             {
-                                data: 'kpi.periode'
+                                data: 'periode'
                             },
                             {
-                                data: 'kpi.user.nama'
+                                data: 'user.nama'
                             },
                             {
-                                data: 'kpi.subdivisi'
+                                data: 'subdivisi'
                             },
                             {
-                                data: 'created_at',
+                                data: 'id',
                                 render: function(data) {
-                                    var options = {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric",
-                                    };
-
-                                    // Tanggal dan waktu awal dalam format UTC
-                                    var tanggalWaktuUTC = new Date(data);
-
-                                    return new Intl.DateTimeFormat("id-ID", options).format(
-                                        tanggalWaktuUTC);
+                                    return `<a href="{{ url('admin-general/${data}/pdf') }}"
+                                                target="_blank" class="btn fw-bold btn-sm btn-info">
+                                                <i class="bi bi-filetype-pdf"></i>
+                                            </a>`;
                                 }
                             },
                             {
                                 data: 'file',
-                                render: function(data) {
-                                    if (data != null) {
-                                        return `<a href="/storage/pdf/${data}"
-                                                    target="_blank" class="btn fw-bold btn-sm btn-warning">
-                                                    <i class="bi bi-filetype-pdf"></i>
-                                                </a>`;
-                                    } else {
-                                        return "-";
-                                    }
-                                }
-                            },
-                            {
-                                data: 'kpi.file',
                                 render: function(data) {
                                     if (data != null) {
                                         return `<a href="{{ url('storage/file/${data}') }}"
@@ -154,7 +133,7 @@
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 6],
+                                targets: [0, 1, 3, 4, 5],
                                 className: "text-center align-middle text-capitalize text-nowrap"
                             },
                             {

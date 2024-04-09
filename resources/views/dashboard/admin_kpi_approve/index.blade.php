@@ -60,7 +60,6 @@
                                 <th class="text-center text-nowrap">Target</th>
                                 <th class="text-center text-nowrap">Nama</th>
                                 <th class="text-center text-nowrap">Sub Divisi</th>
-                                <th class="text-center text-nowrap">Tanggal Approve</th>
                                 <th class="text-center text-nowrap">File</th>
                             </tr>
                         </thead>
@@ -89,44 +88,28 @@
                                 }
                             },
                             {
-                                data: 'kpi.periode'
+                                data: 'periode'
                             },
                             {
-                                data: 'kpi.kamus.pointkpi'
+                                data: 'kamus.pointkpi'
                             },
                             {
-                                data: 'kpi.aktual_realisasi'
+                                data: 'aktual_realisasi'
                             },
                             {
-                                data: 'kpi.kamus',
+                                data: 'kamus',
                                 render: function(data) {
                                     return `${data.target} ${data.unit_target}`;
                                 }
                             },
                             {
-                                data: 'kpi.user.nama'
+                                data: 'user.nama'
                             },
                             {
-                                data: 'kpi.subdivisi'
+                                data: 'subdivisi'
                             },
                             {
-                                data: 'created_at',
-                                render: function(data) {
-                                    var options = {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric",
-                                    };
-
-                                    // Tanggal dan waktu awal dalam format UTC
-                                    var tanggalWaktuUTC = new Date(data);
-
-                                    return new Intl.DateTimeFormat("id-ID", options).format(
-                                        tanggalWaktuUTC);
-                                }
-                            },
-                            {
-                                data: 'kpi.file',
+                                data: 'file',
                                 render: function(data) {
                                     if (data != null) {
                                         return `<a href="{{ asset('storage/file/${data}') }}"
@@ -140,7 +123,7 @@
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 6, 7, 8],
+                                targets: [0, 1, 3, 4, 5, 6, 7],
                                 className: "text-center align-middle text-capitalize text-nowrap"
                             },
                             {

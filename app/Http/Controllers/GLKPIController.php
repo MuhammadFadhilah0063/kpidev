@@ -36,14 +36,12 @@ class GLKPIController extends Controller
         if (request()->ajax()) {
             if (Auth::user()->kategori == "MASTER") {
                 $kpis = GLKPI::where("subdivisi", $subdivisi)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with("kamus", "user", "periode")
                     ->get();
             } else {
                 $kpis = GLKPI::where("subdivisi", $subdivisi)
                     ->where("id_user", Auth::user()->id)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with("kamus", "user", "periode")
                     ->get();
@@ -75,11 +73,13 @@ class GLKPIController extends Controller
             $request->all(),
             [
                 'pencapaian_sf'      => 'required|numeric',
+                'realisasi'          => 'required',
                 'id_kamus'           => 'required',
             ],
             [
                 'pencapaian_sf.required'       => 'Pencapaian SF harus diisi!',
                 'pencapaian_sf.numeric'        => 'Pencapaian SF harus diisi angka. Angka desimal pakai "." bukan ","!',
+                'realisasi.required'           => 'Realisasi harus diisi!',
                 'id_kamus.required'            => 'Point harus diisi!',
             ]
         );
@@ -103,6 +103,7 @@ class GLKPIController extends Controller
                     'id_kamus' => $request->id_kamus,
                     'id_user' => $request->id_user,
                     'pencapaian_sf' => $request->pencapaian_sf,
+                    'realisasi' => $request->realisasi,
                     'subdivisi' => strtoupper($request->subdivisi),
                     'file' => $imgname,
                 ]);
@@ -112,6 +113,7 @@ class GLKPIController extends Controller
                     'id_kamus' => $request->id_kamus,
                     'id_user' => $request->id_user,
                     'pencapaian_sf' => $request->pencapaian_sf,
+                    'realisasi' => $request->realisasi,
                     'subdivisi' => strtoupper($request->subdivisi),
                 ]);
             }
@@ -144,11 +146,13 @@ class GLKPIController extends Controller
             $request->all(),
             [
                 'pencapaian_sf'      => 'required|numeric',
+                'realisasi'          => 'required',
                 'id_kamus'           => 'required',
             ],
             [
                 'pencapaian_sf.required'       => 'Pencapaian SF harus diisi!',
                 'pencapaian_sf.numeric'        => 'Pencapaian SF harus diisi angka. Angka desimal pakai "." bukan ","!',
+                'realisasi.required'           => 'Realisasi harus diisi!',
                 'id_kamus.required'            => 'Point harus diisi!',
             ]
         );
@@ -165,13 +169,20 @@ class GLKPIController extends Controller
             $kpi = GLKPI::find($id);
             $fileKpi = $kpi->file;
 
+            if ($kpi->status == "reject") {
+                $status = "wait";
+            } else {
+                $status = $kpi->status;
+            }
+
             $kpi->update([
                 'id_periode' => $request->periode,
                 'id_kamus' => $request->id_kamus,
                 'id_user' => $request->id_user,
                 'pencapaian_sf' => $request->pencapaian_sf,
+                'realisasi' => $request->realisasi,
                 'subdivisi' => strtoupper($request->subdivisi),
-                'status' => 'wait',
+                'status' => $status,
                 'alasan' => NULL,
             ]);
 

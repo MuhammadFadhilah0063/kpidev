@@ -36,6 +36,7 @@ class RekapPencapaianSFGLKPIController extends Controller
 
         // Yajra DataTables
         if (request()->ajax()) {
+
             if (Auth::user()->kategori == "MASTER" || Auth::user()->kategori == "SECTION") {
                 $kpis = RekapPencapaianSFGLKPI::with(["user"])
                     ->orderBy("id", "DESC")
@@ -58,9 +59,11 @@ class RekapPencapaianSFGLKPIController extends Controller
             $points = Kamuskpi::where("kategori", "GROUP LEADER")->get();
         }
 
+        $periodeSelect = Periode::get();
+
         if (Auth::user()->kategori == "MASTER" || Auth::user()->kategori == "SECTION") {
             $users = User::where("kategori", "GROUP LEADER")->get();
-            return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "users"));
+            return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "users", "periodeSelect"));
         }
 
         // Ambil data KPI
@@ -77,7 +80,7 @@ class RekapPencapaianSFGLKPIController extends Controller
 
         $pointkpis = array_unique($pointkpis_temp);
 
-        return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "pointkpis"));
+        return view('dashboard.rekap_pencapaian_sf_gl_kpi.index', compact("periodes", "countKPI", "countKPIGL", "points", "pointkpis", "periodeSelect"));
     }
 
     public function store(Request $request)
@@ -115,6 +118,7 @@ class RekapPencapaianSFGLKPIController extends Controller
 
                 // Hitung rata-rata pencapaian sf
                 $kpi = GLKPI::select("pencapaian_sf")
+                    ->where("status", "approve")
                     ->with("periode")
                     ->where("id_user", $request->id_user)
                     ->where("id_kamus", $kamus->id)
@@ -129,7 +133,9 @@ class RekapPencapaianSFGLKPIController extends Controller
                     $jumlah += (float) $item->pencapaian_sf;
                 }
 
-                $rata_rata_pencapaian_sf = round(($jumlah / $jumlahkpi), 2);
+                if ($jumlahkpi != 0) {
+                    $rata_rata_pencapaian_sf = round(($jumlah / $jumlahkpi), 2);
+                }
 
                 // Konversi bintang dari rata2 nilai sf
                 if ($rata_rata_pencapaian_sf > 110) {
@@ -183,25 +189,39 @@ class RekapPencapaianSFGLKPIController extends Controller
     {
         $data = RekapPencapaianSFGLKPI::with(["kamus"])->find($id);
 
-        // Ambil data KPI
-        $kpis = GLKPI::where("id_user", $data->id_user)
-            ->where("id_kamus", $data->id_kamus)
-            ->where("status", "approve")
-            ->with(["periode"])
-            ->get();
+        function convertMonthRangeToArray($monthRange)
+        {
+            $dataPeriode = explode(" - ", $monthRange);
+            $periode = [];
 
-        // Loop melalui setiap entri KPI dan mengambil poin KPI
-        $periodes_temp = [];
-        foreach ($kpis as $kpi) {
-            $periodes_temp[] = $kpi->periode;
+            // Konversi nama bulan menjadi nomor bulan
+            $monthNumber = [
+                'Januari' => '01',
+                'Februari' => '02',
+                'Maret' => '03',
+                'April' => '04',
+                'Mei' => '05',
+                'Juni' => '06',
+                'Juli' => '07',
+                'Agustus' => '08',
+                'September' => '09',
+                'Oktober' => '10',
+                'November' => '11',
+                'Desember' => '12'
+            ];
+
+            foreach ($dataPeriode as $item) {
+                $data = explode(" ", $item);
+                $periode[] = $data[1] . "-" . $monthNumber[$data[0]] . "-01";
+            }
+
+            return $periode;
         }
-
-        $periodes = array_unique($periodes_temp);
 
         return response()->json([
             "status"    => "success",
             "data"      => $data,
-            "periodes"  => $periodes
+            "periodes"   => convertMonthRangeToArray($data->periode)
         ]);
     }
 
@@ -219,6 +239,7 @@ class RekapPencapaianSFGLKPIController extends Controller
             // Hitung rata-rata pencapaian sf
             $kpi = GLKPI::select("pencapaian_sf", "id_periode")
                 ->with("periode")
+                ->where("status", "approve")
                 ->where("id_user", $rekap->id_user)
                 ->where("id_kamus", $rekap->id_kamus)
                 ->whereHas('periode', function ($query) use ($awal, $akhir) {
@@ -232,7 +253,9 @@ class RekapPencapaianSFGLKPIController extends Controller
                 $jumlah += (float) $item->pencapaian_sf;
             }
 
-            $rata_rata_pencapaian_sf = round(($jumlah / $jumlahkpi), 2);
+            if ($jumlahkpi != 0) {
+                $rata_rata_pencapaian_sf = round(($jumlah / $jumlahkpi), 2);
+            }
 
             // Konversi bintang dari rata2 nilai sf
             if ($rata_rata_pencapaian_sf > 110) {
@@ -297,35 +320,35 @@ class RekapPencapaianSFGLKPIController extends Controller
         }
     }
 
-    public function getKpiPeriodes(Request $request)
-    {
-        // Ambil data id kamus
-        $kamus = Kamuskpi::select("id")
-            ->where("pointkpi", $request->point)
-            ->first();
+    // public function getKpiPeriodes(Request $request)
+    // {
+    //     // Ambil data id kamus
+    //     $kamus = Kamuskpi::select("id")
+    //         ->where("pointkpi", $request->point)
+    //         ->first();
 
-        // Ambil data KPI
-        $kpis = GLKPI::where("id_user", $request->user)
-            ->where("id_kamus", $kamus->id)
-            ->where("status", "approve")
-            ->with(["kamus", "periode"])
-            ->orderBy("id", "DESC")
-            ->get();
+    //     // Ambil data KPI
+    //     $kpis = GLKPI::where("id_user", $request->user)
+    //         ->where("id_kamus", $kamus->id)
+    //         ->where("status", "approve")
+    //         ->with(["kamus", "periode"])
+    //         ->orderBy("id", "DESC")
+    //         ->get();
 
-        // Loop melalui setiap entri KPI dan mengambil poin KPI
-        $periodes_temp = [];
-        foreach ($kpis as $kpi) {
-            $periodes_temp[] = $kpi->periode;
-        }
+    //     // Loop melalui setiap entri KPI dan mengambil poin KPI
+    //     $periodes_temp = [];
+    //     foreach ($kpis as $kpi) {
+    //         $periodes_temp[] = $kpi->periode;
+    //     }
 
-        $periodes = array_unique($periodes_temp);
+    //     $periodes = array_unique($periodes_temp);
 
-        return response()->json([
-            "status" => "success",
-            "data"   => [
-                "periodes"  => $periodes,
-                "id_select" => $request->id_select
-            ]
-        ]);
-    }
+    //     return response()->json([
+    //         "status" => "success",
+    //         "data"   => [
+    //             "periodes"  => $periodes,
+    //             "id_select" => $request->id_select
+    //         ]
+    //     ]);
+    // }
 }

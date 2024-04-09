@@ -46,6 +46,7 @@
                             <th class="text-center text-nowrap">Point</th>
                             <th class="text-center text-nowrap">Pencapaian SF</th>
                             <th class="text-center text-nowrap">Target</th>
+                            <th class="text-center text-nowrap">Realisasi</th>
                             <th class="text-center text-nowrap">Status</th>
                             <th class="text-center text-nowrap">Alasan</th>
                             <th class="text-center text-nowrap">nama</th>
@@ -114,6 +115,11 @@
                         <div class="form-group pt-3">
                             <label>Target</label>
                             <input type="text" class="form-control" id="target" readonly>
+                        </div>
+
+                        <div class="form-group pt-3">
+                            <label>Realisasi</label>
+                            <input type="text" class="form-control" id="realisasi">
                         </div>
 
                         <div class="form-group pt-3">
@@ -219,7 +225,7 @@
                         serverSide: true,
                         ajax: "{{ url()->current() }}",
                         'createdRow': function(row, data, dataIndex) {
-                            $('td:eq(6)', row).css('min-width', '300px');
+                            $('td:eq(7)', row).css('min-width', '300px');
                         },
                         columns: [{
                                 data: 'id',
@@ -246,12 +252,17 @@
                                 }
                             },
                             {
+                                data: 'realisasi'
+                            },
+                            {
                                 data: 'status',
                                 render: function(data) {
                                     if (data == 'reject') {
                                         return `<button class="btn fw-bold btn-sm btn-danger">${ucfirst(data)}</button>`;
-                                    } else {
+                                    } else if (data == 'wait') {
                                         return `<button class="btn fw-bold btn-sm btn-warning">${ucfirst(data)}</button>`;
+                                    } else {
+                                        return `<button class="btn fw-bold btn-sm btn-info">${ucfirst(data)}</button>`;
                                     }
                                 }
                             },
@@ -292,11 +303,11 @@
                             },
                         ],
                         columnDefs: [{
-                                targets: [0, 1, 3, 4, 5, 7, 8, 9],
+                                targets: [0, 1, 3, 4, 5, 6, 8, 9, 10],
                                 className: "text-center align-middle text-capitalize text-nowrap"
                             },
                             {
-                                targets: [6],
+                                targets: [7],
                                 className: "align-middle",
                             },
                             {
@@ -324,10 +335,10 @@
 
                         if ($(".btn-aksi").text() == "EDIT") {
                             // Hapus invalid
-                            clearInvalidInput(["periode", "id_kamus", "pencapaian_sf", "file", "id_user"]);
+                            clearInvalidInput(["periode", "id_kamus", "pencapaian_sf", "realisasi",  "file", "id_user"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "realisasi",  "subdivisi",
                                 "id_user"
                             ]);
 
@@ -338,10 +349,10 @@
                             var url = "{{ url()->current() }}/" + id;
                         } else if ($(".btn-aksi").text() == "TAMBAH") {
                             // Hapus invalid
-                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "pencapaian_sf"]);
+                            clearInvalidInput(["nrp", "nama", "password", "id_kamus", "pencapaian_sf", "realisasi"]);
 
                             // Mengambil nilai dari input
-                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "subdivisi",
+                            var formData = getValueInput(["periode", "id_kamus", "pencapaian_sf", "realisasi",  "subdivisi",
                                 "id_user"
                             ]);
                             var url = "{{ url()->current() }}";
@@ -419,14 +430,10 @@
                                         $('#id_user').val(response.data.id_user);
                                     @endif
 
-                                    // $("#periode").find('option').filter(function() {
-                                    //     // Menggunakan .text() untuk membandingkan teks dalam opsi
-                                    //     return $(this).text() === response.data.periode;
-                                    // }).prop('selected', true);
-
                                     $('#periode').val(response.data.id_periode).trigger('change');
                                     $('#id_kamus').val(response.data.id_kamus).trigger('change');
                                     $('#pencapaian_sf').val(response.data.pencapaian_sf);
+                                    $('#realisasi').val(response.data.realisasi);
                                     $('#subdivisi').val(response.data.subdivisi).trigger(
                                         'change');
 
@@ -524,8 +531,8 @@
 
                     // Proses tutup modal
                     $('#modal').on('hidden.bs.modal', function() {
-                        clearInput(["file", "pencapaian_sf"]);
-                        clearInvalidInput(["file", "pencapaian_sf"]);
+                        clearInput(["file", "pencapaian_sf", "realisasi"]);
+                        clearInvalidInput(["file", "pencapaian_sf", "realisasi"]);
 
                         // Hapus pdf preview
                         var preview = $("#pdfIframe");

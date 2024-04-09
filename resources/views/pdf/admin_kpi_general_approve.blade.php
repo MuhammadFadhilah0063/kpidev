@@ -140,7 +140,7 @@
                 </td>
                 <td style="min-width: 230px; padding-top: 60px;"></td>
                 <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
-                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$userApprove->ttd}")) }}">
+                    <img height="70px" src="data:image/png;base64,{{ base64_encode(file_get_contents("storage/ttd/{$kpi->user_approve->ttd}")) }}">
                 </td>
                 <td style="min-width: 230px; padding-top: 60px;"></td>
                 <td class="text-center" style="padding-bottom: 0px; padding-top: 0px;">
@@ -159,7 +159,7 @@
                 <td></td>
                 <td style="padding-top: 0px;" class="text-start text-capitalize text-nowrap">
                     <span style="text-decoration: underline; display: block; padding-bottom: 5px; font-weight: bold">
-                        {{ $userApprove->nama }}
+                        {{ $kpi->user_approve->nama }}
                     </span>
                     Group Leader HCGA
                 </td>

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -15,7 +14,7 @@ class AdminKPIGeneral extends Model
     protected $table = 'admin_kpi_generals';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'file', 'total', 'id_user', "status", "periode", "subdivisi", "alasan", "created_at", "updated_at",
+        'file', 'total', 'id_user', 'id_user_approve', "status", "periode", "subdivisi", "alasan", "created_at", "updated_at",
     ];
 
     public function user(): HasOne
@@ -23,9 +22,9 @@ class AdminKPIGeneral extends Model
         return $this->hasOne(User::class, "id", "id_user");
     }
 
-    public function kpiApprove(): BelongsTo
+    public function user_approve(): HasOne
     {
-        return $this->belongsTo(AdminKPIApprove::class, "id", "id_kpi_general");
+        return $this->hasOne(User::class, "id", "id_user_approve");
     }
 
     public function items(): HasMany

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminKPIApprove;
+use App\Models\AdminKPI;
 use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Support\Facades\Auth;
@@ -29,23 +29,22 @@ class AdminKPIApproveController extends Controller
         if (request()->ajax()) {
 
             if (Auth::user()->kategori == "MASTER") {
-                $kpis = AdminKPIApprove::with(["kpi", "kpi.kamus", "kpi.user"])
-                    ->latest()
+                $kpis = AdminKPI::where("status", "approve")
+                    ->orderBy("id", "DESC")
+                    ->with(["kamus", "user"])
                     ->get();
             } else if (Auth::user()->kategori == "GROUP LEADER") {
-                $kpis = AdminKPIApprove::with(["kpi", "kpi.kamus", "kpi.user"])
-                    ->whereHas('kpi', function ($query) {
-                        $query->where('subdivisi', Auth::user()->subdivisi);
-                    })
-                    ->latest()
+                $kpis = AdminKPI::where("status", "approve")
+                    ->where("subdivisi", Auth::user()->subdivisi)
+                    ->orderBy("id", "DESC")
+                    ->with(["kamus", "user"])
                     ->get();
             } else {
-                $kpis = AdminKPIApprove::with(["kpi", "kpi.kamus", "kpi.user"])
-                    ->whereHas('kpi', function ($query) {
-                        $query->where('subdivisi', Auth::user()->subdivisi);
-                        $query->where('id_user', Auth::user()->id);
-                    })
-                    ->latest()
+                $kpis = AdminKPI::where("status", "approve")
+                    ->where("subdivisi", Auth::user()->subdivisi)
+                    ->where("id_user", Auth::user()->id)
+                    ->orderBy("id", "DESC")
+                    ->with(["kamus", "user"])
                     ->get();
             }
 

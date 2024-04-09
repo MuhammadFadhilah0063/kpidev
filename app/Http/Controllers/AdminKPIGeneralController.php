@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdminKPIGeneral;
-use App\Models\AdminKPIGeneralApprove;
 use App\Models\AdminKPIGeneralItem;
 use App\Models\KamusKPIGeneral;
 use App\Models\Periode;
@@ -40,14 +39,12 @@ class AdminKPIGeneralController extends Controller
         if (request()->ajax()) {
             if (Auth::user()->kategori == "MASTER") {
                 $kpis = AdminKPIGeneral::where("subdivisi", $subdivisi)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with("user")
                     ->get();
             } else {
                 $kpis = AdminKPIGeneral::where("subdivisi", $subdivisi)
                     ->where("id_user", Auth::user()->id)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with("user")
                     ->get();
@@ -115,73 +112,20 @@ class AdminKPIGeneralController extends Controller
         try {
             DB::beginTransaction();
 
-            $kpi = AdminKPIGeneral::with(['user', 'items', 'items.key_kamus'])
-                ->find($request->id);
+            $kpi = AdminKPIGeneral::find($request->id);
 
-            $section = User::where("kategori", "SECTION")->first();
-
-            /// Bikin file pdf ///
-            // Subdivisi
-            if ($kpi->subdivisi == "COMBEN") {
-                $subdivisi = "Comben, Payroll, & PA";
-            } else if ($kpi->subdivisi == "REKRUT") {
-                $subdivisi = "Rekrutmen";
-            } else if ($kpi->subdivisi == "TND") {
-                $subdivisi = "Training & Development";
-            } else {
-                $subdivisi = "Industrial Relation";
+            if(Auth::user()->kategori == "GROUP LEADER") {
+                $id_user_approve = Auth::user()->id;
+            }else {
+                $gl = User::where("kategori", "GROUP LEADER")->where("subdivisi", $kpi->subdivisi)->first();
+                $id_user_approve = $gl->id;
             }
-
-            $title = "KPI Admin $subdivisi - {$kpi->periode}";
-
-            $pdf = PDF::setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-            ])
-                ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
-
-            // User approve
-            if (Auth::user()->kategori != "MASTER") {
-                $userApprove = User::find(Auth::user()->id);
-            } else {
-                $userApprove = User::where("kategori", "GROUP LEADER")
-                    ->where("subdivisi", $kpi->subdivisi)
-                    ->first();
-            }
-
-            // Load HTML view
-            $html = view("pdf.admin_kpi_general_approve", compact(['title', 'kpi', 'userApprove', 'section']))->render();
-
-            // Load external CSS (Bootstrap)
-            $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';
-            $css = file_get_contents($cssFile);
-            $html = "<style>$css</style>\n$html";
-
-            // Load external JavaScript (Bootstrap)
-            $jsFile = 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js';
-            $js = file_get_contents($jsFile);
-            $html = "<script>$js</script>\n$html";
-
-            $pdf->loadHtml($html);
-            $pdf->render();
-
-            // Simpan PDF
-            $namePDF = uniqid() . uniqid() . "-" . random_int(000, 999) . ".pdf";
-            $pdfPath = "storage/pdf/" . $namePDF;
-            $pdf->save($pdfPath);
-            /// End Bikin file pdf ///
-
-            // Simpan KPI Approve
-            AdminKPIGeneralApprove::create([
-                "id_kpi_general" => $kpi->id,
-                "file" => $namePDF,
-                "id_user_approve" => $userApprove->id,
-            ]);
 
             // Ubah KPI
             $kpi->update([
-                "status" => "approve",
-                "alasan" => NULL,
+                "status"          => "approve",
+                "id_user_approve" => $id_user_approve,
+                "alasan"          => NULL,
             ]);
 
             DB::commit();
@@ -363,12 +307,18 @@ class AdminKPIGeneralController extends Controller
             $kpi = AdminKPIGeneral::find($id);
             $fileKpi = $kpi->file;
 
+            if ($kpi->status == "reject") {
+                $status = "wait";
+            } else {
+                $status = $kpi->status;
+            }
+
             // Update kpi general
             $kpi->update([
                 'periode' => ucfirst($request->periode),
                 'id_user' => $request->id_user,
                 'alasan' => null,
-                'status' => "wait",
+                'status' => $status,
             ]);
 
             // Update file
@@ -481,11 +431,10 @@ class AdminKPIGeneralController extends Controller
 
     public function makePdf($id)
     {
-        $kpi = AdminKPIGeneral::with(['user', 'items', 'items.key_kamus'])
+        $kpi = AdminKPIGeneral::with(['user', 'items', 'items.key_kamus', 'user_approve'])
             ->where("id", $id)
             ->first();
 
-        // Subdivisi
         if ($kpi->subdivisi == "COMBEN") {
             $subdivisi = "Comben, Payroll, & PA";
         } else if ($kpi->subdivisi == "REKRUT") {
@@ -494,6 +443,12 @@ class AdminKPIGeneralController extends Controller
             $subdivisi = "Training & Development";
         } else {
             $subdivisi = "Industrial Relation";
+        }
+
+        if ($kpi->status == "approve") {
+            $path = "pdf.admin_kpi_general_approve";
+        } else {
+            $path = "pdf.admin_kpi_general";
         }
 
         $title   = "KPI Admin $subdivisi - {$kpi->periode}";
@@ -508,7 +463,7 @@ class AdminKPIGeneralController extends Controller
             ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
 
         // Load HTML view
-        $html = view('pdf.admin_kpi_general', compact(['title', 'kpi', 'section']))->render();
+        $html = view($path, compact(['title', 'kpi', 'section']))->render();
 
         // Load external CSS (Bootstrap)
         $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';

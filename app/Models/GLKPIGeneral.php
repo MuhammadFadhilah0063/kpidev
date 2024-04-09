@@ -28,11 +28,6 @@ class GLKPIGeneral extends Model
         return $this->hasOne(Periode::class, "id", "id_periode");
     }
 
-    public function kpiApprove(): BelongsTo
-    {
-        return $this->belongsTo(GLKPIApprove::class, "id", "id_kpi_general");
-    }
-
     public function items(): HasMany
     {
         return $this->hasMany(GLKPIGeneralItem::class, 'id_kpi_general', 'id');

@@ -11,7 +11,6 @@ use App\Models\SectionKPIGeneralCategoryItem;
 use App\Services\BadgeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,8 +61,6 @@ class SectionKPIGeneralController extends Controller
             }
         }
 
-        $kamuss;
-
         $periodes = Periode::orderBy("id", "ASC")->get();
 
         return view('dashboard.section_kpi_generals.index', compact("countKPI", "countKPIGL", "kamuss", "periodes"));
@@ -82,7 +79,7 @@ class SectionKPIGeneralController extends Controller
             $periode_akhir = Carbon::parse($request->periode_akhir);
 
             // Ubah format tanggal menjadi "NamaBulan Tahun" (misal: "Januari 2024")
-            $periode_awal_format = $periode_awal->translatedFormat('F');
+            $periode_awal_format = $periode_awal->translatedFormat('F Y');
             $periode_akhir_format = $periode_akhir->translatedFormat('F Y');
 
             $periode = $periode_awal_format . " - " . $periode_akhir_format;
@@ -296,7 +293,7 @@ class SectionKPIGeneralController extends Controller
             $periode_akhir = Carbon::parse($request->periode_akhir);
 
             // Ubah format tanggal menjadi "NamaBulan Tahun" (misal: "Januari 2024")
-            $periode_awal_format = $periode_awal->translatedFormat('F');
+            $periode_awal_format = $periode_awal->translatedFormat('F Y');
             $periode_akhir_format = $periode_akhir->translatedFormat('F Y');
 
             $periode = $periode_awal_format . " - " . $periode_akhir_format;

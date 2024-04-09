@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GLKPI;
 use App\Models\GLKPIApprove;
 use App\Models\Periode;
 use App\Models\User;
@@ -30,16 +31,15 @@ class GLKPIApproveController extends Controller
         if (request()->ajax()) {
 
             if (Auth::user()->subdivisi) {
-                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.periode", "kpi.user"])
-                    ->whereHas('kpi', function ($query) {
-                        $query->where('subdivisi', Auth::user()->subdivisi);
-                        $query->where('id_user', Auth::user()->id);
-                    })
-                    ->latest()
+                $kpis = GLKPI::where("subdivisi", Auth::user()->subdivisi)
+                    ->where("status", "approve")
+                    ->orderBy("id", "DESC")
+                    ->with("kamus", "user", "periode")
                     ->get();
             } else {
-                $kpis = GLKPIApprove::with(["kpi", "kpi.kamus", "kpi.periode", "kpi.user"])
-                    ->latest()
+                $kpis = GLKPI::where("status", "approve")
+                    ->orderBy("id", "DESC")
+                    ->with("kamus", "user", "periode")
                     ->get();
             }
 

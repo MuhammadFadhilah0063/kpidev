@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminKPIGeneral;
 use App\Models\AdminKPIGeneralApprove;
 use App\Models\Periode;
 use App\Models\User;
@@ -31,24 +32,23 @@ class AdminKPIGeneralApproveController extends Controller
 
             if (Auth::user()->subdivisi) {
                 if (Auth::user()->kategori == "ADMIN") {
-                    $kpis = AdminKPIGeneralApprove::with(["kpi", "kpi.user"])
-                        ->whereHas('kpi', function ($query) {
-                            $query->where('subdivisi', Auth::user()->subdivisi);
-                            $query->where('id_user', Auth::user()->id);
-                        })
-                        ->latest()
+                    $kpis = AdminKPIGeneral::where("subdivisi", Auth::user()->subdivisi)
+                        ->where("status", "approve")
+                        ->where("id_user", Auth::user()->id)
+                        ->orderBy("id", "DESC")
+                        ->with("user")
                         ->get();
                 } else {
-                    $kpis = AdminKPIGeneralApprove::with(["kpi", "kpi.user"])
-                        ->whereHas('kpi', function ($query) {
-                            $query->where('subdivisi', Auth::user()->subdivisi);
-                        })
-                        ->latest()
+                    $kpis = AdminKPIGeneral::where("subdivisi", Auth::user()->subdivisi)
+                        ->where("status", "approve")
+                        ->orderBy("id", "DESC")
+                        ->with("user")
                         ->get();
                 }
             } else {
-                $kpis = AdminKPIGeneralApprove::with(["kpi", "kpi.user"])
-                    ->latest()
+                $kpis = AdminKPIGeneral::where("status", "approve")
+                    ->orderBy("id", "DESC")
+                    ->with("user")
                     ->get();
             }
 

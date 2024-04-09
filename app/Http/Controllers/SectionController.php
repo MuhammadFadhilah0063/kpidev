@@ -53,12 +53,6 @@ class SectionController extends Controller
             DB::beginTransaction();
 
             $kpi = GLKPI::find($request->id);
-
-            // Simpan KPI Approve
-            GLKPIApprove::create([
-                "id_kpi" => $kpi->id,
-            ]);
-
             $kpi->update([
                 "status" => "approve",
                 "alasan" => NULL,

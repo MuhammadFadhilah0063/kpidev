@@ -73,9 +73,4 @@ class User extends Authenticatable
     {
         return $this->belongsTo(AdminKPIGeneral::class, "id", "id_user");
     }
-
-    public function admin_kpi_general_approve(): BelongsTo
-    {
-        return $this->belongsTo(AdminKPIGeneralApprove::class, "id", "id_user_approve");
-    }
 }

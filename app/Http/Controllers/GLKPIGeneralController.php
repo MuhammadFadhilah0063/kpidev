@@ -40,13 +40,11 @@ class GLKPIGeneralController extends Controller
         if (request()->ajax()) {
             if (Auth::user()->kategori == "MASTER") {
                 $kpis = GLKPIGeneral::where("subdivisi", $subdivisi)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with(["user", "periode"])
                     ->get();
             } else {
                 $kpis = GLKPIGeneral::where("subdivisi", $subdivisi)
-                    ->whereNot("status", "approve")
                     ->orderBy("id", "DESC")
                     ->with(["user", "periode"])
                     ->get();
@@ -107,67 +105,6 @@ class GLKPIGeneralController extends Controller
 
             $kpi = GLKPIGeneral::with(['user', 'items', 'periode', 'items.key_kamus', 'items.key_kamus.kamus'])
                 ->find($request->id);
-
-            /// Bikin file pdf ///
-            // Subdivisi
-            if ($kpi->subdivisi == "COMBEN") {
-                $subdivisi = "Comben, Payroll, & PA";
-                $path = "pdf.comben.gl_kpi_general_approve";
-            } else if ($kpi->subdivisi == "REKRUT") {
-                $subdivisi = "Rekrutmen";
-                $path = "pdf.rekrut.gl_kpi_general_approve";
-            } else if ($kpi->subdivisi == "TND") {
-                $subdivisi = "Training & Development";
-                $path = "pdf.tnd.gl_kpi_general_approve";
-            } else {
-                $subdivisi = "Industrial Relation";
-                $path = "pdf.ir.gl_kpi_general_approve";
-            }
-
-            $title = "KPI Group Leader $subdivisi - {$kpi->periode->periode}";
-
-            // Data Section Head
-            $section = User::where("KATEGORI", "SECTION")->first();
-
-            // Data 3 GL
-            $gl = User::where("kategori", "GROUP LEADER")
-                ->where("subdivisi", $kpi->subdivisi)
-                ->limit(3)
-                ->get();
-
-            $pdf = PDF::setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-            ])
-                ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
-
-            // Load HTML view
-            $html = view($path, compact(['title', 'kpi', 'section', "gl"]))->render();
-
-            // Load external CSS (Bootstrap)
-            $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';
-            $css = file_get_contents($cssFile);
-            $html = "<style>$css</style>\n$html";
-
-            // Load external JavaScript (Bootstrap)
-            $jsFile = 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js';
-            $js = file_get_contents($jsFile);
-            $html = "<script>$js</script>\n$html";
-
-            $pdf->loadHtml($html);
-            $pdf->render();
-
-            // Simpan PDF
-            $namePDF = uniqid() . uniqid() . "-" . random_int(000, 999) . ".pdf";
-            $pdfPath = "storage/pdf/" . $namePDF;
-            $pdf->save($pdfPath);
-            /// End Bikin file pdf ///
-
-            // Simpan KPI Approve
-            GLKPIGeneralApprove::create([
-                "id_kpi_general" => $kpi->id,
-                "file" => $namePDF,
-            ]);
 
             // Ubah KPI
             $kpi->update([
@@ -358,12 +295,18 @@ class GLKPIGeneralController extends Controller
             $kpi = GLKPIGeneral::find($id);
             $fileKpi = $kpi->file;
 
+            if ($kpi->status == "reject") {
+                $status = "wait";
+            } else {
+                $status = $kpi->status;
+            }
+
             // Update kpi general
             $kpi->update([
                 'id_periode' => $request->periode,
                 'id_user'    => $request->id_user,
                 'alasan'     => null,
-                'status'     => "wait",
+                'status'     => $status,
             ]);
 
             // Update file
@@ -481,19 +424,6 @@ class GLKPIGeneralController extends Controller
             ->where("id", $id)
             ->first();
 
-        // Subdivisi
-        if ($kpi->subdivisi == "COMBEN") {
-            $subdivisi = "Comben, Payroll, & PA";
-        } else if ($kpi->subdivisi == "REKRUT") {
-            $subdivisi = "Rekrutmen";
-        } else if ($kpi->subdivisi == "TND") {
-            $subdivisi = "Training & Development";
-        } else {
-            $subdivisi = "Industrial Relation";
-        }
-
-        $title   = "KPI Group Leader $subdivisi - {$kpi->periode->periode}";
-
         // Data Section Head
         $section = User::where("kategori", "SECTION")->first();
 
@@ -509,16 +439,42 @@ class GLKPIGeneralController extends Controller
         ])
             ->setPaper(array(0, 0, 609.449, 935.433), 'landscape');
 
-        // Load HTML view
+        /// Bikin file pdf ///
+        // Subdivisi
         if ($kpi->subdivisi == "COMBEN") {
-            $html = view('pdf.comben.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
+            $subdivisi = "Comben, Payroll, & PA";
+            if ($kpi->status == "approve") {
+                $path = "pdf.comben.gl_kpi_general_approve";
+            } else {
+                $path = "pdf.comben.gl_kpi_general";
+            }
         } else if ($kpi->subdivisi == "REKRUT") {
-            $html = view('pdf.rekrut.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
+            $subdivisi = "Rekrutmen";
+            if ($kpi->status == "approve") {
+                $path = "pdf.rekrut.gl_kpi_general_approve";
+            } else {
+                $path = "pdf.rekrut.gl_kpi_general";
+            }
         } else if ($kpi->subdivisi == "TND") {
-            $html = view('pdf.tnd.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
+            $subdivisi = "Training & Development";
+            if ($kpi->status == "approve") {
+                $path = "pdf.tnd.gl_kpi_general_approve";
+            } else {
+                $path = "pdf.tnd.gl_kpi_general";
+            }
         } else {
-            $html = view('pdf.ir.gl_kpi_general', compact(['title', 'kpi', 'section', 'gl']))->render();
+            $subdivisi = "Industrial Relation";
+            if ($kpi->status == "approve") {
+                $path = "pdf.ir.gl_kpi_general_approve";
+            } else {
+                $path = "pdf.ir.gl_kpi_general";
+            }
         }
+
+        $title   = "KPI Group Leader $subdivisi - {$kpi->periode->periode}";
+
+        // Load HTML view
+        $html = view($path, compact(['title', 'kpi', 'section', "gl"]))->render();
 
         // Load external CSS (Bootstrap)
         $cssFile = 'assets/vendor/bootstrap/css/bootstrap.min.css';

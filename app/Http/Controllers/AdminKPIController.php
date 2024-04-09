@@ -32,7 +32,6 @@ class AdminKPIController extends Controller
         if (request()->ajax()) {
             $kpis = AdminKPI::where("subdivisi", $subdivisi)
                 ->where("id_user", Auth::user()->id)
-                ->whereNot("status", "approve")
                 ->orderBy("id", "DESC")
                 ->with("kamus")
                 ->get();
@@ -153,6 +152,12 @@ class AdminKPIController extends Controller
             $kpi = AdminKPI::find($id);
             $fileKpi = $kpi->file;
 
+            if ($kpi->status == "reject") {
+                $status = "wait";
+            } else {
+                $status = $kpi->status;
+            }
+
             $kpi->update([
                 'periode' => ucfirst($request->periode),
                 'id_kamus' => $request->id_kamus,
@@ -160,7 +165,7 @@ class AdminKPIController extends Controller
                 'aktual_realisasi' => $request->aktual_realisasi,
                 'pencapaian_sf' => $request->pencapaian_sf,
                 'subdivisi' => strtoupper($request->subdivisi),
-                'status' => 'wait',
+                'status' => $status,
                 'alasan' => NULL,
             ]);
 
@@ -264,11 +269,6 @@ class AdminKPIController extends Controller
             DB::beginTransaction();
 
             $kpi = AdminKPI::find($request->id);
-
-            // Simpan KPI Approve
-            AdminKPIApprove::create([
-                "id_kpi" => $kpi->id,
-            ]);
 
             $kpi->update([
                 "status" => "approve",
