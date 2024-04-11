@@ -1,331 +1,331 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data KPI Section'])
 
 @section('breadcrumb')
-<li class="breadcrumb-item active"><a>KPI Section</a></li>
+    <li class="breadcrumb-item active"><a>KPI Section</a></li>
 @endsection
 
 @push('button')
-<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-    Tambah
-</button>
+    <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+        Tambah
+    </button>
 @endpush
 
 @section('content')
-<div class="col-lg-12 content">
+    <div class="col-lg-12 content">
 
-    <div class="card">
+        <div class="card">
 
-        <div class="card-header">
-            <div class="d-flex flex-column flex-sm-row">
-                <div style="min-width: 240px" class="flex-column flex-sm-row mx-auto mx-sm-0">
-                    <div class="my-0 text-center text-sm-start">
-                        <label for="filter_periode" class="pb-2 fw-bold">Filter Periode</label>
-                    </div>
-                    <select name="filter_periode" id="filter_periode" class="form-control select2"
-                        style="max-width: 240px;">
-                        <option value="">Pilih Filter</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-body">
-            <div class="table-responsive pt-3">
-                <!-- Table with stripped rows -->
-                <table class="table table-striped table-hover table-bordered" id="tableData">
-                    <thead class="table-danger">
-                        <tr>
-                            <th class="text-center text-nowrap">No.</th>
-                            <th class="text-center text-nowrap">Periode</th>
-                            <th class="text-center text-nowrap">KPI</th>
-                            <th class="text-center text-nowrap">file</th>
-                            <th class="text-center text-nowrap">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <!-- End Table with stripped rows -->
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal --}}
-    <div class="modal fade" id="modal" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="pb-1">Periode Awal <code>*</code></label>
-                                <select name="periode_awal" id="periode" class="form-control select-periode-awal1">
-                                    <option value="">Pilih Periode</option>
-                                    @foreach ($periodes as $periode)
-                                    <option value="{{ $periode->tanggal }}">{{ $periode->periode }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
+            <div class="card-header">
+                <div class="d-flex flex-column flex-sm-row">
+                    <div style="min-width: 240px" class="flex-column flex-sm-row mx-auto mx-sm-0">
+                        <div class="my-0 text-center text-sm-start">
+                            <label for="filter_periode" class="pb-2 fw-bold">Filter Periode</label>
                         </div>
-
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="pb-1">Periode Akhir <code>*</code></label>
-                                <select name="periode_akhir" id="periode" class="form-control select-point1">
-                                    <option value="">Pilih Periode</option>
-                                    @foreach ($periodes as $periode)
-                                    <option value="{{ $periode->tanggal }}">{{ $periode->periode }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group pt-3">
-                        <label class="pb-1">Parameter <code>*</code></label>
-                        <textarea class="form-control" name="parameter" id="parameter" cols="30" rows="6"></textarea>
-                        <small class="fst-italic">
-                            Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir
-                            kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
-                                title="Contoh pengisian!"
-                                class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
-                                <i class="bi bi-info-lg"></i>
-                            </a>
-                        </small>
-                    </div>
-
-                    <div class="form-group pt-3">
-                        <label class="pb-1">File</label>
-                        <input type="file" name="file" id="file" class="form-control" accept="image/*, application/pdf"
-                            onchange="selectPreview(this);">
-                        <small class="fst-italic">
-                            Pilih file, jika ingin upload. File bisa image atau pdf.
-                        </small>
-                    </div>
-
-                    {{-- Image Preview --}}
-                    <div class="col-12 text-center pt-3 div-image-preview">
-                        <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
-                            style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
-                    </div>
-
-                    {{-- PDF Preview --}}
-                    <div class="col-12 text-center pt-3 div-pdf-preview" style="display: none;">
-                        <iframe style="margin: 0 auto;" id="pdfIframe" frameborder="0" height="400px"
-                            width="100%"></iframe>
+                        <select name="filter_periode" id="filter_periode" class="form-control select2"
+                            style="max-width: 240px;">
+                            <option value="">Pilih Filter</option>
+                        </select>
                     </div>
                 </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button class="btn btn-primary fw-bold" data-bs-target="#modal2" data-bs-toggle="modal">
-                        Lanjut
-                    </button>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive pt-3">
+                    <!-- Table with stripped rows -->
+                    <table class="table table-striped table-hover table-bordered" id="tableData">
+                        <thead class="table-danger">
+                            <tr>
+                                <th class="text-center text-nowrap">No.</th>
+                                <th class="text-center text-nowrap">Periode</th>
+                                <th class="text-center text-nowrap">KPI</th>
+                                <th class="text-center text-nowrap">file</th>
+                                <th class="text-center text-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Modal 2 --}}
-    <div class="modal fade" id="modal2" aria-hidden="true" aria-labelledby="modal2Label" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="main">
-                        {{-- Tabs Item --}}
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link text-danger active" id="tab-1" data-bs-toggle="tab"
-                                    data-bs-target="#tab-pane-1" type="button" role="tab">
-                                    1
-                                </button>
-                            </li>
-                        </ul>
-
-                        {{-- Tabs Content --}}
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="tab-pane-1" role="tabpanel" tabindex="1">
-
-                                <div class="form-group pt-3">
-                                    <label class="pb-1">BSC Category 1 <code>*</code></label>
-                                    <input type="text" name="bsc_category" class="form-control" id="bsc_category">
+        {{-- Modal --}}
+        <div class="modal fade" id="modal" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="pb-1">Periode Awal <code>*</code></label>
+                                    <select name="periode_awal" id="periode" class="form-control select-periode-awal1">
+                                        <option value="">Pilih Periode</option>
+                                        @foreach ($periodes as $periode)
+                                            <option value="{{ $periode->tanggal }}">{{ $periode->periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
+                            </div>
 
-                                <div class="box-container">
-                                    <div data-boxid="1" class="box-item border rounded p-2 mt-3">
-                                        <input type="hidden" name="id">
-                                        <input type="hidden" name="point" value="0">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="pb-1">Periode Akhir <code>*</code></label>
+                                    <select name="periode_akhir" id="periode" class="form-control select-point1">
+                                        <option value="">Pilih Periode</option>
+                                        @foreach ($periodes as $periode)
+                                            <option value="{{ $periode->tanggal }}">{{ $periode->periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-                                        <div class="text-center">
-                                            Goal 1
-                                        </div>
-                                        <hr style="margin-top: 8px;">
+                        <div class="form-group pt-3">
+                            <label class="pb-1">Parameter <code>*</code></label>
+                            <textarea class="form-control" name="parameter" id="parameter" cols="30" rows="6"></textarea>
+                            <small class="fst-italic">
+                                Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada akhir
+                                kalimat. <a href="{{ asset('assets/images/input.png') }}" target="_blank"
+                                    title="Contoh pengisian!"
+                                    class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                    <i class="bi bi-info-lg"></i>
+                                </a>
+                            </small>
+                        </div>
 
-                                        <div class="form-group">
-                                            <label class="pb-1">Goal Name</label>
-                                            <input type="text" name="goal_name" class="form-control">
-                                        </div>
+                        <div class="form-group pt-3">
+                            <label class="pb-1">File</label>
+                            <input type="file" name="file" id="file" class="form-control"
+                                accept="image/*, application/pdf" onchange="selectPreview(this);">
+                            <small class="fst-italic">
+                                Pilih file, jika ingin upload. File bisa image atau pdf.
+                            </small>
+                        </div>
 
-                                        <div class="form-group">
-                                            <label class="pt-3 pb-1">Metric Description</label>
-                                            <textarea required class="form-control" name="metric_description" cols="30"
-                                                rows="5"></textarea>
-                                            <small class="fst-italic">
-                                                Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada
-                                                akhir
-                                                kalimat. <a href="{{ asset('assets/images/input.png') }}"
-                                                    target="_blank" title="Contoh pengisian!"
-                                                    class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
-                                                    <i class="bi bi-info-lg"></i>
-                                                </a>
-                                            </small>
-                                        </div>
+                        {{-- Image Preview --}}
+                        <div class="col-12 text-center pt-3 div-image-preview">
+                            <img id="imagePreview" src="#" alt="Preview" class="img-fluid img-thumbnail"
+                                style="display:none; max-width: 100%; max-height: 300px; margin: 0 auto;">
+                        </div>
 
-                                        <div class="form-group">
-                                            <label class="pt-3 pb-1">Metric Scale</label>
-                                            <textarea required class="form-control" name="metric_scale" cols="30"
-                                                rows="6"></textarea>
-                                            <small class="fst-italic">
-                                                Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada
-                                                akhir
-                                                kalimat. <a href="{{ asset('assets/images/input.png') }}"
-                                                    target="_blank" title="Contoh pengisian!"
-                                                    class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
-                                                    <i class="bi bi-info-lg"></i>
-                                                </a>
-                                            </small>
-                                        </div>
+                        {{-- PDF Preview --}}
+                        <div class="col-12 text-center pt-3 div-pdf-preview" style="display: none;">
+                            <iframe style="margin: 0 auto;" id="pdfIframe" frameborder="0" height="400px"
+                                width="100%"></iframe>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button class="btn btn-primary fw-bold" data-bs-target="#modal2" data-bs-toggle="modal">
+                            Lanjut
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                        <div class="form-group">
-                                            <label class="pt-3 pb-1">Weight</label>
-                                            <input type="number" name="weight" class="form-control">
-                                        </div>
+        {{-- Modal 2 --}}
+        <div class="modal fade" id="modal2" aria-hidden="true" aria-labelledby="modal2Label" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH KPI BARU</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="main">
+                            {{-- Tabs Item --}}
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link text-danger active" id="tab-1" data-bs-toggle="tab"
+                                        data-bs-target="#tab-pane-1" type="button" role="tab">
+                                        1
+                                    </button>
+                                </li>
+                            </ul>
 
-                                        <div class="border rounded p-3 pt-2 mt-4">
+                            {{-- Tabs Content --}}
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="tab-pane-1" role="tabpanel" tabindex="1">
+
+                                    <div class="form-group pt-3">
+                                        <label class="pb-1">BSC Category 1 <code>*</code></label>
+                                        <input type="text" name="bsc_category" class="form-control"
+                                            id="bsc_category">
+                                    </div>
+
+                                    <div class="box-container">
+                                        <div data-boxid="1" class="box-item border rounded p-2 mt-3">
+                                            <input type="hidden" name="id">
+                                            <input type="hidden" name="point" value="0">
+
                                             <div class="text-center">
-                                                <label class="pb-1">Pilih Point <code>*</code></label>
-                                                <hr class="mt-0">
+                                                Goal 1
                                             </div>
-                                            <div class="box-filter">
-                                                <div data-filter="1" class="row">
-                                                    <div class="col-7">
-                                                        <div class="form-group">
-                                                            <label class="pb-1">Sub Divisi</label>
-                                                            <select name="filter_subdivisi" class="form-select">
-                                                                <option value="">Pilih Sub Divisi</option>
-                                                                <option value="COMBEN">COMBEN</option>
-                                                                <option value="REKRUT">REKRUT</option>
-                                                                <option value="TND">TND</option>
-                                                                <option value="IR">IR</option>
-                                                                <option value="ALL TEAM">ALL TEAM</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label class="pb-1">Baris</label>
-                                                        <input type="text" class="form-control" name="filter_baris"
-                                                            disabled value="0">
-                                                    </div>
-                                                </div>
+                                            <hr style="margin-top: 8px;">
+
+                                            <div class="form-group">
+                                                <label class="pb-1">Goal Name</label>
+                                                <input type="text" name="goal_name" class="form-control">
                                             </div>
 
-                                            <div class="row">
-                                                <small class="fst-italic pt-2">
-                                                    Catatan: Untuk baris bisa lebih dari 1 baris, pisahkan baris dengan
-                                                    "-". Contoh: 1-5-8.
+                                            <div class="form-group">
+                                                <label class="pt-3 pb-1">Metric Description</label>
+                                                <textarea required class="form-control" name="metric_description" cols="30" rows="5"></textarea>
+                                                <small class="fst-italic">
+                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada
+                                                    akhir
+                                                    kalimat. <a href="{{ asset('assets/images/input.png') }}"
+                                                        target="_blank" title="Contoh pengisian!"
+                                                        class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                        <i class="bi bi-info-lg"></i>
+                                                    </a>
                                                 </small>
                                             </div>
 
-                                            <div class="row pt-3">
-                                                <div class="col">
-                                                    <button type="button"
-                                                        class="btn btn-sm fw-bold btn-primary btn-add-filter">
-                                                        + Point
-                                                    </button>
-                                                    <button type="button"
-                                                        class="btn btn-sm fw-bold btn-danger btn-remove-filter"
-                                                        disabled>
-                                                        - Point
-                                                    </button>
+                                            <div class="form-group">
+                                                <label class="pt-3 pb-1">Metric Scale</label>
+                                                <textarea required class="form-control" name="metric_scale" cols="30" rows="6"></textarea>
+                                                <small class="fst-italic">
+                                                    Catatan: Untuk enter atau pemisah kalimat perbaris, tambahkan @ pada
+                                                    akhir
+                                                    kalimat. <a href="{{ asset('assets/images/input.png') }}"
+                                                        target="_blank" title="Contoh pengisian!"
+                                                        class="btn btn-sm btn-outline-danger p-0 px-1 rounded-4 fw-bold">
+                                                        <i class="bi bi-info-lg"></i>
+                                                    </a>
+                                                </small>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="pt-3 pb-1">Weight</label>
+                                                <input type="number" name="weight" class="form-control">
+                                            </div>
+
+                                            <div class="border rounded p-3 pt-2 mt-4">
+                                                <div class="text-center">
+                                                    <label class="pb-1">Pilih Point <code>*</code></label>
+                                                    <hr class="mt-0">
+                                                </div>
+                                                <div class="box-filter">
+                                                    <div data-filter="1" class="row">
+                                                        <div class="col-7">
+                                                            <div class="form-group">
+                                                                <label class="pb-1">Sub Divisi</label>
+                                                                <select name="filter_subdivisi" class="form-select">
+                                                                    <option value="">Pilih Sub Divisi</option>
+                                                                    <option value="COMBEN">COMBEN</option>
+                                                                    <option value="REKRUT">REKRUT</option>
+                                                                    <option value="TND">TND</option>
+                                                                    <option value="IR">IR</option>
+                                                                    <option value="ALL TEAM">ALL TEAM</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label class="pb-1">Baris</label>
+                                                            <input type="text" class="form-control"
+                                                                name="filter_baris" disabled value="0">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <small class="fst-italic pt-2">
+                                                        Catatan: Untuk baris bisa lebih dari 1 baris, pisahkan baris dengan
+                                                        "-". Contoh: 1-5-8.
+                                                    </small>
+                                                </div>
+
+                                                <div class="row pt-3">
+                                                    <div class="col">
+                                                        <button type="button"
+                                                            class="btn btn-sm fw-bold btn-primary btn-add-filter">
+                                                            + Point
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-sm fw-bold btn-danger btn-remove-filter"
+                                                            disabled>
+                                                            - Point
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         </div>
-
                                     </div>
-                                </div>
 
-                                <div class="row pt-2">
-                                    <small class="fst-italic">
-                                        Catatan: Untuk 1 goal bisa memiliki point lebih dari 1. Untuk point diambil
-                                        berdasarkan sub divisi dengan baris (urutan point KPI), untuk point ALL TEAM
-                                        diambil berdasarkan nama point KPI yang sama pada semua sub divisi.
-                                        </a>
-                                    </small>
-                                </div>
+                                    <div class="row pt-2">
+                                        <small class="fst-italic">
+                                            Catatan: Untuk 1 goal bisa memiliki point lebih dari 1. Untuk point diambil
+                                            berdasarkan sub divisi dengan baris (urutan point KPI), untuk point ALL TEAM
+                                            diambil berdasarkan nama point KPI yang sama pada semua sub divisi.
+                                            </a>
+                                        </small>
+                                    </div>
 
-                                <div class="row pt-3">
-                                    <div class="col">
-                                        <button type="button" class="btn btn-sm fw-bold btn-primary btn-add-indicator">
-                                            + Goal
-                                        </button>
-                                        <button type="button" class="btn btn-sm fw-bold btn-info  btn-add-category">
-                                            + BSC Category
-                                        </button>
+                                    <div class="row pt-3">
+                                        <div class="col">
+                                            <button type="button"
+                                                class="btn btn-sm fw-bold btn-primary btn-add-indicator">
+                                                + Goal
+                                            </button>
+                                            <button type="button" class="btn btn-sm fw-bold btn-info  btn-add-category">
+                                                + BSC Category
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary fw-bold" id="scrollUpBtn">
-                        <i class="bi bi-arrow-up"></i>
-                    </button>
-                    <button class="btn fw-bold btn-warning" data-bs-target="#modal" data-bs-toggle="modal">
-                        Kembali
-                    </button>
-                    <button class="btn-aksi btn fw-bold btn-primary">
-                        Simpan
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal Detail --}}
-    <div class="modal fade" id="modalDetail" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="exampleModalLabel">Detail Data KPI</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <span class="label-table fw-bold d-inline-block pb-1" style="font-size: 13px">
-                    </span>
-                    <div class="table-responsive">
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary fw-bold" id="scrollUpBtn">
+                            <i class="bi bi-arrow-up"></i>
+                        </button>
+                        <button class="btn fw-bold btn-warning" data-bs-target="#modal" data-bs-toggle="modal">
+                            Kembali
+                        </button>
+                        <button class="btn-aksi btn fw-bold btn-primary">
+                            Simpan
+                        </button>
                     </div>
                 </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button class="btn btn-primary fw-bold" data-bs-dismiss="modal">
-                        Tutup
-                    </button>
+            </div>
+        </div>
+
+        {{-- Modal Detail --}}
+        <div class="modal fade" id="modalDetail" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel">Detail Data KPI</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span class="label-table fw-bold d-inline-block pb-1" style="font-size: 13px">
+                        </span>
+                        <div class="table-responsive">
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button class="btn btn-primary fw-bold" data-bs-dismiss="modal">
+                            Tutup
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    @push('scripts')
-    <script>
-        $(document).ready(function() {
+        @push('scripts')
+            <script>
+                $(document).ready(function() {
 
                     // Button add
                     $('#btnAdd').on("click", function(event) {
@@ -342,7 +342,7 @@
                         processing: true,
                         serverSide: true,
                         ajax: "{{ url()->current() }}",
-                        "drawCallback": function () {
+                        "drawCallback": function() {
                             // Setelah DataTables selesai diinisialisasi, lakukan operasi yang Anda inginkan
                             var dataPeriode = dataTable.column(1).data();
                             var periode = [];
@@ -359,12 +359,20 @@
                             selectPeriode.empty();
                             selectPeriode.append(`<option value="">Pilih Filter</option>`);
 
+                            // Buat objek untuk menyimpan opsi yang unik
+                            var uniqueOptions = {};
+
                             // Tambahkan opsi periode dari array `periode`
                             periode.forEach(function(value, index) {
-                                selectPeriode.append($('<option>', {
-                                    value: value,
-                                    text: value
-                                }));
+                                // Jika nilai belum ada dalam objek uniqueOptions, tambahkan ke objek dan juga ke elemen select
+                                if (!uniqueOptions[value]) {
+                                    selectPeriode.append($('<option>', {
+                                        value: value,
+                                        text: value
+                                    }));
+                                    // Tandai nilai sebagai sudah ditambahkan
+                                    uniqueOptions[value] = true;
+                                }
                             });
 
                             // Pilih kembali nilai yang sebelumnya dipilih, jika ada
@@ -1719,7 +1727,7 @@
                     // Sembunyikan pratinjau gambar
                     document.getElementById('imagePreview').style.display = 'none';
                 }
-    </script>
-    @endpush
-</div>
+            </script>
+        @endpush
+    </div>
 @endsection

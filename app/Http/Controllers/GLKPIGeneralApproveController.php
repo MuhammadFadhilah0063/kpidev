@@ -30,14 +30,14 @@ class GLKPIGeneralApproveController extends Controller
         // Yajra DataTables
         if (request()->ajax()) {
 
-            if (Auth::user()->kategori == "MASTER") {
+            if (Auth::user()->kategori == "GROUP LEADER") {
                 $kpis = GLKPIGeneral::where("status", "approve")
+                    ->where("subdivisi", Auth::user()->subdivisi)
                     ->orderBy("id", "DESC")
                     ->with(["user", "periode"])
                     ->get();
             } else {
                 $kpis = GLKPIGeneral::where("status", "approve")
-                    ->where("subdivisi", Auth::user()->subdivisi)
                     ->orderBy("id", "DESC")
                     ->with(["user", "periode"])
                     ->get();

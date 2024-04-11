@@ -107,21 +107,32 @@ class RekapPencapaianSFGLKPIController extends Controller
             foreach ($goals as $goal) {
                 $rata_rata_pencapaian_sf = 0;
 
-                // Ambil data id kamus
-                $kamus = Kamuskpi::select("id")
-                    ->where("pointkpi", $goal['point_kpi'])
-                    ->first();
-
                 // Nilai periode awal dan akhir
                 $awal = $goal['periode_awal'];
                 $akhir = $goal['periode_akhir'];
+                $point_kpi = $goal['point_kpi'];
+
+                // Ambil salah satu KPI dengan id_user yg sama
+                $kpifirst = GLKPI::where("status", "approve")
+                    ->with(["periode", "kamus"])
+                    ->where("id_user", $request->id_user)
+                    ->whereHas('periode', function ($query) use ($awal, $akhir) {
+                        $query->whereBetween('tanggal', [$awal, $akhir]);
+                    })
+                    ->whereHas('kamus', function ($query) use ($point_kpi) {
+                        $query->where('pointkpi', $point_kpi);
+                    })
+                    ->first();
+
+                // Ambil data id kamus
+                $kamus_id = $kpifirst->id_kamus;
 
                 // Hitung rata-rata pencapaian sf
                 $kpi = GLKPI::select("pencapaian_sf")
                     ->where("status", "approve")
                     ->with("periode")
                     ->where("id_user", $request->id_user)
-                    ->where("id_kamus", $kamus->id)
+                    ->where("id_kamus", $kamus_id)
                     ->whereHas('periode', function ($query) use ($awal, $akhir) {
                         $query->whereBetween('tanggal', [$awal, $akhir]);
                     })
@@ -161,7 +172,7 @@ class RekapPencapaianSFGLKPIController extends Controller
 
                 RekapPencapaianSFGLKPI::create([
                     "id_user"                  => $request->id_user,
-                    "id_kamus"                 => $kamus->id,
+                    "id_kamus"                 => $kamus_id,
                     "point_kpi"                => $goal['point_kpi'],
                     "periode"                  => $periode_awal_format . " - " . $periode_akhir_format,
                     "rata_rata_pencapaian_sf"  => $rata_rata_pencapaian_sf,
