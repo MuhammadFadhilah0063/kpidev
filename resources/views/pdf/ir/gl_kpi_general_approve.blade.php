@@ -56,9 +56,9 @@
 </head>
 
 <body>
-    <div class="body">
+    <div class="body" style="margin-top: 0px;">
 
-        <div class="row" style="margin-top: 30px;">
+        <div class="row" style="margin-top: 0px;">
             <span class="fw-bold d-inline-block pb-2" style="font-size: 13px">{{ $title }}</span>
             <table>
                 <tr class="tr-data">
@@ -70,6 +70,7 @@
                     <th>Realisasi</th>
                     <th>Skor</th>
                     <th>Konversi SF</th>
+                    <th>Konversi Bintang</th>
                     <th style="max-width: 70px;">Skor Akhir (skor x bobot)/100</th>
                 </tr>
                 @foreach ($kpi->items as $index => $item)
@@ -101,11 +102,26 @@
                         <td>{{ formatText($item->realisasi) }}</td>
                         <td>{{ $item->skor }}</td>
                         <td>{{ $item->konversi_sf }}</td>
+                        
+                        {{-- Konversi Bintang --}}
+                        @if($item->konversi_sf > 110) 
+                        <td>Bintang 5</td>
+                        @elseif($item->konversi_sf >= 101)
+                        <td>Bintang 4</td>
+                        @elseif($item->konversi_sf >= 91)
+                        <td>Bintang 3</td>
+                        @elseif($item->konversi_sf >= 80)
+                        <td>Bintang 2</td>
+                        @else
+                        <td>Bintang 1</td>
+                        @endif
+                        {{-- Konversi Bintang --}}
+
                         <td style="background-color: rgb(227, 227, 227);">{{ $item->skor_akhir }}</td>
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="5"></td>
+                    <td colspan="6"></td>
                     <td colspan="3" class="total text-center" style="border: 1px black solid;">TOTAL</td>
                     <td class="total-value text-center" style="border: 1px black solid;">{{ $kpi->total }}</td>
                 </tr>

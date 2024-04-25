@@ -1,289 +1,287 @@
 @extends('layouts.dashboard', ['pageTitle' => 'Data Rekap Pencapaian SF KPI Individu Group Leader'])
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active"><a>Rekap Pencapaian SF KPI Individu Group Leader</a></li>
+<li class="breadcrumb-item active"><a>Rekap Pencapaian SF KPI Individu Group Leader</a></li>
 @endsection
 
 @if (Auth::user()->kategori == 'GROUP LEADER')
-    @push('button')
-        <button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
-            Tambah
-        </button>
-    @endpush
+@push('button')
+<button class="btn btn-sm btn-primary fw-bold rounded" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modal">
+    Tambah
+</button>
+@endpush
 @endif
 
 @section('content')
-    <div class="col-lg-12">
+<div class="col-lg-12">
 
-        <div class="card">
-            <div class="card-header">
-                <button class="btn btn-primary fw-bold" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-                    Filter Data
-                </button>
+    <div class="card">
+        <div class="card-header">
+            <button class="btn btn-primary fw-bold" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                Filter Data
+            </button>
 
-                <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
-                    aria-labelledby="offcanvasWithBothOptionsLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filter Data</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+                aria-labelledby="offcanvasWithBothOptionsLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filter Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
+                    <div class="row">
+                        <div class="col">
+                            <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
+                            <select data-column="6" name="filter_subdivisi" id="filter_subdivisi"
+                                class="form-control selectCanvas">
+                                <option value="">Pilih Filter</option>
+                                <option value="COMBEN">COMBEN</option>
+                                <option value="REKRUT">REKRUT</option>
+                                <option value="TND">TND</option>
+                                <option value="IR">IR</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="offcanvas-body">
-                        @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
-                            <div class="row">
-                                <div class="col">
-                                    <label for="filter_subdivisi" class="pb-2 fw-bold">Filter Sub Divisi</label>
-                                    <select data-column="6" name="filter_subdivisi" id="filter_subdivisi"
-                                        class="form-control selectCanvas">
-                                        <option value="">Pilih Filter</option>
-                                        <option value="COMBEN">COMBEN</option>
-                                        <option value="REKRUT">REKRUT</option>
-                                        <option value="TND">TND</option>
-                                        <option value="IR">IR</option>
-                                    </select>
-                                </div>
+
+                    <div class="row pt-3">
+                        <div class="col">
+                            <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
+                            <select data-column="5" name="filter_nama" id="filter_nama"
+                                class="form-control selectCanvas">
+                                <option value="">Pilih Filter</option>
+                                @foreach ($users as $user)
+                                <option value="{{ $user->nama }}">{{ $user->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="row pt-3">
+                        <div class="col">
+                            <label for="filter_point" class="pb-2 fw-bold">Filter Point</label>
+                            <select data-column="2" name="filter_point" id="filter_point"
+                                class="form-control selectCanvas">
+                                <option value="">Pilih Filter</option>
+                                @foreach ($points as $point)
+                                <option value="{{ $point->pointkpi }}">{{ $point->pointkpi }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col">
+                            <label for="filter_periode" class="pb-2 fw-bold">Filter Periode</label>
+                            <select data-column="5" name="filter_periode" id="filter_periode"
+                                class="form-control selectCanvas">
+                                <option value="">Pilih Filter</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive pt-3">
+                <!-- Table with stripped rows -->
+                <table class="table table-striped table-hover table-bordered" id="tableData">
+                    <thead class="table-danger">
+                        <tr>
+                            <th class="text-center text-nowrap">No.</th>
+                            <th class="text-center text-nowrap">Periode</th>
+                            <th class="text-center text-nowrap">Point KPI</th>
+                            <th class="text-center text-nowrap">Pencapaian SF</th>
+                            <th class="text-center text-nowrap">Konversi Bintang</th>
+                            @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
+                            <th class="text-center text-nowrap">Nama</th>
+                            <th class="text-center text-nowrap">Sub Divisi</th>
+                            @endif
+                            @if (Auth::user()->kategori == 'GROUP LEADER')
+                            <th class="text-center text-nowrap">Aksi</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="modal" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH REKAP PENCAPAIAN SF KPI BARU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="pb-1">User</label>
+                        <input class="form-control" type="hidden" name="id_user" id="id_user"
+                            value="{{ Auth::user()->id }}">
+                        <input class="form-control" type="text" disabled
+                            value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
+                    </div>
+
+                    <div class="box-container">
+                        <div data-boxid="1" class="box-item border rounded p-2 mt-3">
+                            <input type="hidden" name="id">
+
+                            <div class="text-center">
+                                Point KPI 1
+                            </div>
+                            <hr style="margin-top: 8px;">
+
+                            <div class="form-group form-point">
+                                <label class="pb-1">Point</label>
+                                <select name="point_kpi" id="point_kpi" class="form-select select-point1"
+                                    data-user="{{ Auth::user()->id }}" data-idselect="1">
+                                    <option value="">Pilih Point</option>
+                                    @if (Auth::user()->kategori == 'GROUP LEADER')
+                                    @foreach ($pointkpis as $point)
+                                    <option value="{{ $point }}">
+                                        {{ $point }}
+                                    </option>
+                                    @endforeach
+                                    @endif
+                                </select>
                             </div>
 
                             <div class="row pt-3">
                                 <div class="col">
-                                    <label for="filter_nama" class="pb-2 fw-bold">Filter Nama</label>
-                                    <select data-column="5" name="filter_nama" id="filter_nama"
-                                        class="form-control selectCanvas">
-                                        <option value="">Pilih Filter</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->nama }}">{{ $user->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="row pt-3">
-                            <div class="col">
-                                <label for="filter_point" class="pb-2 fw-bold">Filter Point</label>
-                                <select data-column="2" name="filter_point" id="filter_point"
-                                    class="form-control selectCanvas">
-                                    <option value="">Pilih Filter</option>
-                                    @foreach ($points as $point)
-                                        <option value="{{ $point->pointkpi }}">{{ $point->pointkpi }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row pt-3">
-                            <div class="col">
-                                <label for="filter_periode" class="pb-2 fw-bold">Filter Periode</label>
-                                <select data-column="5" name="filter_periode" id="filter_periode"
-                                    class="form-control selectCanvas">
-                                    <option value="">Pilih Filter</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="table-responsive pt-3">
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped table-hover table-bordered" id="tableData">
-                        <thead class="table-danger">
-                            <tr>
-                                <th class="text-center text-nowrap">No.</th>
-                                <th class="text-center text-nowrap">Periode</th>
-                                <th class="text-center text-nowrap">Point KPI</th>
-                                <th class="text-center text-nowrap">Pencapaian SF</th>
-                                <th class="text-center text-nowrap">Konversi Bintang</th>
-                                @if (Auth::user()->kategori == 'MASTER' || Auth::user()->kategori == 'SECTION')
-                                    <th class="text-center text-nowrap">Nama</th>
-                                    <th class="text-center text-nowrap">Sub Divisi</th>
-                                @endif
-                                @if (Auth::user()->kategori == 'GROUP LEADER')
-                                    <th class="text-center text-nowrap">Aksi</th>
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                </div>
-            </div>
-        </div>
-
-        {{-- Modal --}}
-        <div class="modal fade" id="modal" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">TAMBAH REKAP PENCAPAIAN SF KPI BARU</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label class="pb-1">User</label>
-                            <input class="form-control" type="hidden" name="id_user" id="id_user"
-                                value="{{ Auth::user()->id }}">
-                            <input class="form-control" type="text" disabled
-                                value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
-                        </div>
-
-                        <div class="box-container">
-                            <div data-boxid="1" class="box-item border rounded p-2 mt-3">
-                                <input type="hidden" name="id">
-
-                                <div class="text-center">
-                                    Point KPI 1
-                                </div>
-                                <hr style="margin-top: 8px;">
-
-                                <div class="form-group form-point">
-                                    <label class="pb-1">Point</label>
-                                    <select name="point_kpi" id="point_kpi" class="form-select select-point1"
-                                        data-user="{{ Auth::user()->id }}" data-idselect="1">
-                                        <option value="">Pilih Point</option>
-                                        @if (Auth::user()->kategori == 'GROUP LEADER')
-                                            @foreach ($pointkpis as $point)
-                                                <option value="{{ $point }}">
-                                                    {{ $point }}
-                                                </option>
+                                    <div class="form-group">
+                                        <label class="pb-1">Periode Awal</label>
+                                        <select name="periode_awal" id="periode"
+                                            class="form-control select-periode-awal1">
+                                            <option value="">Pilih Periode</option>
+                                            @foreach ($periodeSelect as $item)
+                                            <option value="{{ $item->tanggal }}">
+                                                {{ $item->periode }}
+                                            </option>
                                             @endforeach
-                                        @endif
-                                    </select>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="row pt-3">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label class="pb-1">Periode Awal</label>
-                                            <select name="periode_awal" id="periode"
-                                                class="form-control select-periode-awal1">
-                                                <option value="">Pilih Periode</option>
-                                                @foreach ($periodeSelect as $item)
-                                                    <option value="{{ $item->tanggal }}">
-                                                        {{ $item->periode }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label class="pb-1">Periode Akhir</label>
-                                            <select name="periode_akhir" id="periode"
-                                                class="form-control select-point1">
-                                                <option value="">Pilih Periode</option>
-                                                @foreach ($periodeSelect as $item)
-                                                    <option value="{{ $item->tanggal }}">
-                                                        {{ $item->periode }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pb-1">Periode Akhir</label>
+                                        <select name="periode_akhir" id="periode" class="form-control select-point1">
+                                            <option value="">Pilih Periode</option>
+                                            @foreach ($periodeSelect as $item)
+                                            <option value="{{ $item->tanggal }}">
+                                                {{ $item->periode }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="row pt-3">
-                            <div class="col">
-                                <button type="button" class="btn btn-sm fw-bold btn-warning btn-add-point">
-                                    + Point KPI
-                                </button>
-                            </div>
+                    <div class="row pt-3">
+                        <div class="col">
+                            <button type="button" class="btn btn-sm fw-bold btn-warning btn-add-point">
+                                + Point KPI
+                            </button>
                         </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button data-bs-dismiss="modal" class="btn fw-bold btn-secondary">
-                            Tutup
-                        </button>
-                        <button class="btn-simpan btn fw-bold btn-primary">
-                            Simpan
-                        </button>
-                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button data-bs-dismiss="modal" class="btn fw-bold btn-secondary">
+                        Tutup
+                    </button>
+                    <button class="btn-simpan btn fw-bold btn-primary">
+                        Simpan
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        {{-- Modal Edit --}}
-        <div class="modal fade" id="modal-edit" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="exampleModalLabel">EDIT REKAP PENCAPAIAN SF KPI</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    {{-- Modal Edit --}}
+    <div class="modal fade" id="modal-edit" aria-hidden="true" aria-labelledby="modalLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">EDIT REKAP PENCAPAIAN SF KPI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="pb-1">User</label>
+                        <input class="form-control" type="hidden" name="id_user" id="id_user"
+                            value="{{ Auth::user()->id }}">
+                        <input class="form-control" type="text" disabled
+                            value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
                     </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label class="pb-1">User</label>
-                            <input class="form-control" type="hidden" name="id_user" id="id_user"
-                                value="{{ Auth::user()->id }}">
-                            <input class="form-control" type="text" disabled
-                                value="{{ Auth::user()->nrp }} | {{ ucfirst(Auth::user()->nama) }}">
-                        </div>
 
-                        <div class="box-container">
-                            <div data-boxid="1" class="box-item border rounded p-2 mt-3">
-                                <input type="hidden" name="id">
+                    <div class="box-container">
+                        <div data-boxid="1" class="box-item border rounded p-2 mt-3">
+                            <input type="hidden" name="id">
 
-                                <div class="text-center">
-                                    Point KPI
-                                </div>
-                                <hr style="margin-top: 8px;">
+                            <div class="text-center">
+                                Point KPI
+                            </div>
+                            <hr style="margin-top: 8px;">
 
-                                <div class="form-group form-point">
-                                    <label class="pb-1">Point</label>
-                                    <input disabled class="form-control" name="point_kpi_edit" id="point_kpi_edit"
-                                        type="text">
-                                </div>
+                            <div class="form-group form-point">
+                                <label class="pb-1">Point</label>
+                                <input disabled class="form-control" name="point_kpi_edit" id="point_kpi_edit"
+                                    type="text">
+                            </div>
 
-                                <div class="row pt-3">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label class="pb-1">Periode Awal</label>
-                                            <select name="periode_awal_edit" id="periode_awal_edit" class="form-control">
-                                                @foreach ($periodeSelect as $item)
-                                                    <option value="{{ $item->tanggal }}">
-                                                        {{ $item->periode }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                            <div class="row pt-3">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pb-1">Periode Awal</label>
+                                        <select name="periode_awal_edit" id="periode_awal_edit" class="form-control">
+                                            @foreach ($periodeSelect as $item)
+                                            <option value="{{ $item->tanggal }}">
+                                                {{ $item->periode }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
+                                </div>
 
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label class="pb-1">Periode Akhir</label>
-                                            <select name="periode_akhir_edit" id="periode_akhir_edit"
-                                                class="form-control">
-                                                @foreach ($periodeSelect as $item)
-                                                    <option value="{{ $item->tanggal }}">
-                                                        {{ $item->periode }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="pb-1">Periode Akhir</label>
+                                        <select name="periode_akhir_edit" id="periode_akhir_edit" class="form-control">
+                                            @foreach ($periodeSelect as $item)
+                                            <option value="{{ $item->tanggal }}">
+                                                {{ $item->periode }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button data-bs-dismiss="modal" class="btn fw-bold btn-secondary">
-                            Tutup
-                        </button>
-                        <button class="btn-update btn fw-bold btn-primary">
-                            Edit
-                        </button>
-                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button data-bs-dismiss="modal" class="btn fw-bold btn-secondary">
+                        Tutup
+                    </button>
+                    <button class="btn-update btn fw-bold btn-primary">
+                        Edit
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        @push('scripts')
-            <script>
-                $(document).ready(function() {
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
 
                     // Datatable
                     var dataTable = $('#tableData').DataTable({
@@ -733,7 +731,7 @@
                         theme: 'bootstrap',
                     });
                 });
-            </script>
-        @endpush
-    </div>
+    </script>
+    @endpush
+</div>
 @endsection
