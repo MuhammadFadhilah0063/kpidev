@@ -1,27 +1,27 @@
 @extends('layouts.login')
 
 @section('form')
-    <form class="row g-3 needs-validation" method="POST" novalidate>
-        <div class="col-12">
-            <label for="nrp" class="form-label">NRP</label>
-            <div class="input-group has-validation">
-                <input type="text" name="nrp" class="form-control" id="nrp" required autofocus>
-            </div>
+<form class="row g-3 needs-validation" method="POST" novalidate>
+    <div class="col-12">
+        <label for="nrp" class="form-label">NRP</label>
+        <div class="input-group has-validation">
+            <input type="text" name="nrp" class="form-control" id="nrp" required autofocus>
         </div>
+    </div>
 
-        <div class="col-12">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" id="password" required>
-        </div>
+    <div class="col-12">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" required>
+    </div>
 
-        <div class="col-12 mt-4 text-center">
-            <button class="btn btn-success w-100 fw-bold text-white" type="submit" id="btnMasuk">Masuk</button>
-        </div>
-    </form>
+    <div class="col-12 mt-4 text-center">
+        <button class="btn btn-success w-100 fw-bold text-white" type="submit" id="btnMasuk">Masuk</button>
+    </div>
+</form>
 
-    @push('scripts')
-        <script>
-            // Proses login
+@push('scripts')
+<script>
+    // Proses login
             $(document).ready(() => {
 
                 // Menanggapi klik pada tombol "Masuk"
@@ -85,6 +85,6 @@
                     });
                 });
             });
-        </script>
-    @endpush
+</script>
+@endpush
 @endsection
