@@ -23,6 +23,11 @@ class Kamuskpi extends Model
         return $this->belongsTo(GLKPI::class, "id", "id_kamus");
     }
 
+    public function gl_kpi_bulanan(): BelongsTo
+    {
+        return $this->belongsTo(GLKPIBulananItem::class, "id", "id_kamus");
+    }
+
     public function admin_kpi(): BelongsTo
     {
         return $this->belongsTo(AdminKPI::class, "id", "id_kamus");

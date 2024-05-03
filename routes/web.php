@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminKPIGeneralController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GLKPIApproveController;
+use App\Http\Controllers\GLKPIBulananController;
 use App\Http\Controllers\GLKPIController;
 use App\Http\Controllers\GLKPIGeneralController;
 use App\Http\Controllers\KamusKPIController;
@@ -92,6 +93,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pencapaian-sf-kpi-individu-gl/{id}/edit', [RekapPencapaianSFGLKPIController::class, 'edit'])->name('rekapGLEditKPI');
     Route::put('/pencapaian-sf-kpi-individu-gl/{id}', [RekapPencapaianSFGLKPIController::class, 'update'])->name('rekapGLUpdateKPI');
     Route::delete('/pencapaian-sf-kpi-individu-gl/{id}', [RekapPencapaianSFGLKPIController::class, 'destroy'])->name('rekapGLDestroyKPI');
+
+    // KPI GL Individu Bulanan
+    Route::get('/kpi-individu-gl-bulanan', [GLKPIBulananController::class, 'index'])->name('glKpiBulanan');
+    Route::post('/kpi-individu-gl-bulanan', [GLKPIBulananController::class, 'store']);
+    Route::get('/kpi-individu-gl-bulanan/{id}/edit', [GLKPIBulananController::class, 'edit']);
+    Route::put('/kpi-individu-gl-bulanan/{id}', [GLKPIBulananController::class, 'update']);
+    Route::delete('/kpi-individu-gl-bulanan/{id}', [GLKPIBulananController::class, 'destroy']);
+    Route::get('/kpi-individu-gl-bulanan/get-point/{id_user}/{periode}', [GLKPIBulananController::class, 'getPoint']);
 
     // GL KPI General
     Route::get('/gl-general/{id}/pdf', [GLKPIGeneralController::class, 'makePdf'])->name('glkpiGeneralPdf');

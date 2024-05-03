@@ -127,6 +127,16 @@
             </a>
         </li>
         {{-- Pencapaian SF Individu End --}}
+
+        {{-- KPI GL Individu Bulanan --}}
+        <li class="nav-item">
+            <a class="nav-link nav-link-load {{ Request::is('kpi-individu-gl-bulanan') ? '' : 'collapsed' }}"
+                href="{{ route('glKpiBulanan') }}">
+                <i class="bi bi-inboxes"></i>
+                <span>KPI GL Individu Bulanan</span>
+            </a>
+        </li>
+        {{-- KPI GL Individu Bulanan End --}}
         @endif
 
         {{-- KPI General --}}
@@ -348,6 +358,16 @@
             </a>
         </li>
         {{-- Pencapaian SF Individu End --}}
+
+        {{-- KPI GL Individu Bulanan --}}
+        <li class="nav-item">
+            <a class="nav-link nav-link-load {{ Request::is('kpi-individu-gl-bulanan') ? '' : 'collapsed' }}"
+                href="{{ route('glKpiBulanan') }}">
+                <i class="bi bi-inboxes"></i>
+                <span>KPI GL Individu Bulanan</span>
+            </a>
+        </li>
+        {{-- KPI GL Individu Bulanan End --}}
 
         <!-- KPI Section Nav -->
         <li class="nav-item">
